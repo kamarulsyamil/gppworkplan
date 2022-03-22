@@ -1,5 +1,7 @@
 import imp
 from statistics import mode
+from tkinter.font import BOLD
+from sqlalchemy import column
 import xlsxwriter as xlwrite
 from ExcelExtractor import *
 import pandas as pd
@@ -100,9 +102,39 @@ def openpxWorkbook():
     # title of worksheet
     ws.title = "Workplans"
 
-    # create tables
+    # create legend
+    ws['J7'] = 'Legend'
+    ws['J7'].font = Font(bold=True)
+    ws.merge_cells('J7:K7')
+    ws['J7'].border = double
+    ws['K7'].border = double
 
+    ws['J8'] = 'First shift'
+    ws['J9'] = 'Second shift'
+    ws['J8'].border = double
+    ws['J9'].border = double
+
+    ws['K8'].fill = PatternFill("solid", fgColor="00FFFFCC")
+    ws['K9'].fill = PatternFill("solid", fgColor="00FFFF00")
+    ws['K8'].border = double
+    ws['K9'].border = double
+
+    # subheader and cell color
+    for col in ws.iter_cols(min_col=2, min_row=8, max_col=2, max_row=63):
+        for cell in col:
+            cell.fill = PatternFill("solid", fgColor="DDDDDD")
+
+    for col in ws.iter_cols(min_col=3, min_row=8, max_col=5, max_row=63):
+        for cell in col:
+            cell.fill = PatternFill("solid", fgColor="00FFFFCC")
+
+    for col in ws.iter_cols(min_col=6, min_row=8, max_col=8, max_row=63):
+        for cell in col:
+            cell.fill = PatternFill("solid", fgColor="00FFFF00")
+
+    # create tables
     rows = 7
+    findex = 0
 
     for row in ws.iter_rows(min_row=7, min_col=2, max_row=63, max_col=8):
         for cell in row:
@@ -110,16 +142,23 @@ def openpxWorkbook():
 
         if rows == 7 or rows == 15 or rows == 23 or rows == 31 or rows == 39 or rows == 48 or rows == 56:
             i = 0
+
             for cell in row:
                 cell.value = header[i]
-                cell.border = double
-                cell.fill = PatternFill("solid", fgColor="DDDDDD")
+                #cell.border = double
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill("solid", fgColor="00FFCC99")
                 i += 1
+
+            # factory name
+            ws.cell(row=rows, column=4, value=fName[findex])
+            findex += 1
 
         elif rows == 8 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 49 or rows == 57:
             i = 0
             for cell in row:
                 cell.value = subheader[i]
+                cell.font = Font(bold=True)
                 i += 1
 
         rows += 1
@@ -138,8 +177,6 @@ def openpxWorkbook():
                            end_row=header, end_column=7)
 
         header += 1
-
-    # subheader
 
     # save xl to explorer
     wb.save('Consolidated Factory Workplan.xlsx')

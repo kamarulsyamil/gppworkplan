@@ -3,6 +3,8 @@ from statistics import mode
 import xlsxwriter as xlwrite
 from ExcelExtractor import *
 import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import Border, Side, Color, PatternFill, Font, GradientFill, Alignment
 
 workbook = xlwrite.Workbook('test.xlsx')
 
@@ -36,15 +38,15 @@ def createWorkbook():
 
     # df = CCC4Df()
 
-    fname = 'DCCC4'  # df.fName
-    date = 'Mar-11'
+    # fname = 'DCCC4'  # df.fName
+    # date = 'Mar-11'
 
     # Merge 3 cells.
     # headers
     worksheet.merge_range('B4:C4', 'Factory/Site', merge_format)
     worksheet.merge_range('D4:E4', fname, merge_format)
     worksheet.merge_range('F4:G4', 'Date', merge_format)
-    worksheet.write('H4', date, merge_format)
+    worksheet.write('H4', '', merge_format)
 
     worksheet.write('B5', 'Line', bold)
     worksheet.write('C5', 'Start Time', bold)
@@ -58,6 +60,10 @@ def createWorkbook():
 
 
 def insertData():
+    wb = Workbook()
+    ws = workbook.active
+
+    df, fname, fdate = CCC4Df()
 
     writer = pd.ExcelWriter('test.xlsx', engine='openpyxl',
                             mode='a', if_sheet_exists='overlay')
@@ -67,10 +73,78 @@ def insertData():
     CCC4Df().to_excel(writer, sheet_name='Sheet1',
                       startrow=5, startcol=1, header=False, index=False)
 
+    #worksheet.write('H4', fdate)
+
     worksheet.set_column(2, 2, None, data_theme)
 
     writer.save()
 
 
+def openpxWorkbook():
+
+    double = Border(left=Side(style='thin'),
+                    right=Side(style='thin'),
+                    top=Side(style='thin'),
+                    bottom=Side(style='thin'))
+
+    header = ['Factory/Site', '', '', '', 'Date', '', '']
+
+    fName = ['CCC4', 'CCC2', 'CCC6', 'APCC', 'ICC', 'EMFP', 'BRH1']
+
+    subheader = ['Line', 'Start Time', 'End Time',
+                 'UPH', 'Start Time', 'End Time', 'UPH']
+
+    wb = Workbook()
+    ws = wb.active
+
+    # title of worksheet
+    ws.title = "Workplans"
+
+    # create tables
+
+    rows = 7
+
+    for row in ws.iter_rows(min_row=7, min_col=2, max_row=63, max_col=8):
+        for cell in row:
+            cell.border = double
+
+        if rows == 7 or rows == 15 or rows == 23 or rows == 31 or rows == 39 or rows == 48 or rows == 56:
+            i = 0
+            for cell in row:
+                cell.value = header[i]
+                cell.border = double
+                cell.fill = PatternFill("solid", fgColor="DDDDDD")
+                i += 1
+
+        elif rows == 8 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 49 or rows == 57:
+            i = 0
+            for cell in row:
+                cell.value = subheader[i]
+                i += 1
+
+        rows += 1
+
+    # merge header
+    header = 7
+    max_row = 63
+
+    for x in range(max_row):
+        if header == 7 or header == 15 or header == 23 or header == 31 or header == 39 or header == 48 or header == 56:
+            ws.merge_cells(start_row=header, start_column=2,
+                           end_row=header, end_column=3)
+            ws.merge_cells(start_row=header, start_column=4,
+                           end_row=header, end_column=5)
+            ws.merge_cells(start_row=header, start_column=6,
+                           end_row=header, end_column=7)
+
+        header += 1
+
+    # subheader
+
+    # save xl to explorer
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
 # createWorkbook()
-insertData()
+# insertData()
+openpxWorkbook()

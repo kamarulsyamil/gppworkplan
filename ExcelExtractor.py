@@ -91,7 +91,7 @@ def CCC4Df():
     elif not rightDf[rightDf['Line'].str.contains("Today")].empty:
         print("Means that the DF is on off duty time time or end shift.")
 
-    return df2.reset_index(drop=True)
+    return df2.reset_index(drop=True), fName, date
 
 
 def CCC2Df():
@@ -121,7 +121,7 @@ def CCC2Df():
     elif not leftDf[leftDf['Line'].str.contains("Today")].empty:
         print("Means that the DF is on off duty time time or end shift.")
 
-    return df2.reset_index(drop=True)
+    return df2.reset_index(drop=True), fName, date
 
 
 # removed duplicate

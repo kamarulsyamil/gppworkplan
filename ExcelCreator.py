@@ -5,84 +5,15 @@ from sqlalchemy import column
 import xlsxwriter as xlwrite
 from ExcelExtractor import *
 import pandas as pd
-from openpyxl import Workbook
-from openpyxl.styles import Border, Side, Color, PatternFill, Font, GradientFill, Alignment
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.cell.cell import WriteOnlyCell
 
 workbook = xlwrite.Workbook('test.xlsx')
 
 
 def createWorkbook():
-    worksheet = workbook.add_worksheet()
-
-    # worksheet.set_column()
-
-    # Increase the cell size of the merged cells to highlight the formatting.
-    # worksheet.set_column('B:D', 12)
-    # worksheet.set_row(3, 30)
-    # worksheet.set_row(6, 30)
-    # worksheet.set_row(7, 30)
-
-    # Create a format to use in the merged range.
-
-    merge_format = workbook.add_format({
-        'bold': 1,
-        'border': 1,
-        'align': 'center',
-        'valign': 'vcenter',
-        'fg_color': '#f4B084'})
-
-    bold = workbook.add_format({'bold': 1,
-                                'border': 1})
-
-    global data_theme
-
-    data_theme = workbook.add_format({'border': 1})
-
-    # df = CCC4Df()
-
-    # fname = 'DCCC4'  # df.fName
-    # date = 'Mar-11'
-
-    # Merge 3 cells.
-    # headers
-    worksheet.merge_range('B4:C4', 'Factory/Site', merge_format)
-    worksheet.merge_range('D4:E4', fname, merge_format)
-    worksheet.merge_range('F4:G4', 'Date', merge_format)
-    worksheet.write('H4', '', merge_format)
-
-    worksheet.write('B5', 'Line', bold)
-    worksheet.write('C5', 'Start Time', bold)
-    worksheet.write('D5', 'End Time', bold)
-    worksheet.write('E5', 'UPH', bold)
-    worksheet.write('F5', 'Start Time', bold)
-    worksheet.write('G5', 'End Time', bold)
-    worksheet.write('H5', 'UPH', bold)
-
-    workbook.close()
-
-
-def insertData():
-    wb = Workbook()
-    ws = workbook.active
-
-    df, fname, fdate = CCC4Df()
-
-    writer = pd.ExcelWriter('test.xlsx', engine='openpyxl',
-                            mode='a', if_sheet_exists='overlay')
-
-    worksheet = writer.sheets['Sheet1']
-
-    CCC4Df().to_excel(writer, sheet_name='Sheet1',
-                      startrow=5, startcol=1, header=False, index=False)
-
-    #worksheet.write('H4', fdate)
-
-    worksheet.set_column(2, 2, None, data_theme)
-
-    writer.save()
-
-
-def openpxWorkbook():
 
     double = Border(left=Side(style='thin'),
                     right=Side(style='thin'),
@@ -92,6 +23,16 @@ def openpxWorkbook():
     header = ['Factory/Site', '', '', '', 'Date', '', '']
 
     fName = ['CCC4', 'CCC2', 'CCC6', 'APCC', 'ICC', 'EMFP', 'BRH1']
+
+    CCC4List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell K6',
+                'SV Kitting&Cell K7', 'SV Backend', 'Storage line', 'CFS']
+
+    CCC2List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell',
+                'SV Backend', 'K8 line', 'ARB']
+
+    APCCList = ['Desktop', 'HYBRID 1', 'HYBRID 2', 'Server']
+
+    ICCList = ['Line 1', 'Line 2', 'Line 3']
 
     subheader = ['Line', 'Start Time', 'End Time',
                  'UPH', 'Start Time', 'End Time', 'UPH']
@@ -132,6 +73,41 @@ def openpxWorkbook():
         for cell in col:
             cell.fill = PatternFill("solid", fgColor="00FFFF00")
 
+    # add factory lines
+        #CCC4 and CCC2
+    # merge for night UPH
+    ws.merge_cells(start_column=8, start_row=11, end_column=8, end_row=13)
+
+    # merge for day UPH
+    ws.merge_cells(start_column=5, start_row=9, end_column=5, end_row=10)
+    ws.merge_cells(start_column=5, start_row=11, end_column=5, end_row=13)
+
+    for col in ws.iter_cols(min_col=2, min_row=9, max_col=2, max_row=8 + len(CCC4List)):
+        i = 0
+        for cell in col:
+            cell.value = CCC4List[i]
+            i += 1
+
+    for col in ws.iter_cols(min_col=2, min_row=18, max_col=2, max_row=17 + len(CCC2List)):
+        i = 0
+        for cell in col:
+            cell.value = CCC2List[i]
+            i += 1
+
+        # APCC
+    for col in ws.iter_cols(min_col=2, min_row=34, max_col=2, max_row=33 + len(APCCList)):
+        i = 0
+        for cell in col:
+            cell.value = APCCList[i]
+            i += 1
+
+        # ICC
+    for col in ws.iter_cols(min_col=2, min_row=42, max_col=2, max_row=41 + len(ICCList)):
+        i = 0
+        for cell in col:
+            cell.value = ICCList[i]
+            i += 1
+
     # create tables
     rows = 7
     findex = 0
@@ -140,7 +116,7 @@ def openpxWorkbook():
         for cell in row:
             cell.border = double
 
-        if rows == 7 or rows == 15 or rows == 23 or rows == 31 or rows == 39 or rows == 48 or rows == 56:
+        if rows == 7 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 49 or rows == 57:
             i = 0
 
             for cell in row:
@@ -154,7 +130,7 @@ def openpxWorkbook():
             ws.cell(row=rows, column=4, value=fName[findex])
             findex += 1
 
-        elif rows == 8 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 49 or rows == 57:
+        elif rows == 8 or rows == 17 or rows == 25 or rows == 33 or rows == 41 or rows == 50 or rows == 58:
             i = 0
             for cell in row:
                 cell.value = subheader[i]
@@ -168,7 +144,7 @@ def openpxWorkbook():
     max_row = 63
 
     for x in range(max_row):
-        if header == 7 or header == 15 or header == 23 or header == 31 or header == 39 or header == 48 or header == 56:
+        if header == 7 or header == 16 or header == 24 or header == 32 or header == 40 or header == 49 or header == 57:
             ws.merge_cells(start_row=header, start_column=2,
                            end_row=header, end_column=3)
             ws.merge_cells(start_row=header, start_column=4,
@@ -182,6 +158,214 @@ def openpxWorkbook():
     wb.save('Consolidated Factory Workplan.xlsx')
 
 
+def insertData(factDf):
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    # testing
+    #df, fname, fdate = CCC4Df()
+
+    df, fname, fdate, fshift = factDf
+
+    rows = dataframe_to_rows(df, index=False, header=False)
+
+    # Night start shift
+    if fname == 'CCC4' and fshift == 'start':
+        for r_idx, row in enumerate(rows, 9):
+            for c_idx, value in enumerate(row, 6):
+                ws.cell(row=r_idx, column=c_idx, value=value)
+
+        ws['H7'] = fdate
+        print(df)
+
+    # Night end shift
+    elif fname == 'CCC4' and fshift == 'end':
+        for r_idx, row in enumerate(rows, 9):
+            for c_idx, value in enumerate(row, 4):
+                ws.cell(row=r_idx, column=c_idx, value=value)
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
+def insertData2(factDf):
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    df, fname, fdate, fshift, isNight = factDf
+
+    df_list = df.values.tolist()
+
+    # print(df_list)
+
+    # start shift
+    if fname == 'CCC4' and fshift == 'start':
+
+        if isNight:
+            # gather data
+            ws['H7'] = fdate
+            K6_df = df[df['Line'].str.contains("Kitting&Cell K6")]
+            K6_start = K6_df.loc[K6_df.first_valid_index(), 'Start Time']
+
+            K7_df = df[df['Line'].str.contains("Kitting&Cell K7")]
+            K7_start = K7_df.loc[K7_df.first_valid_index(), 'Start Time']
+
+            SVbackend_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_start = SVbackend_df.loc[SVbackend_df.first_valid_index(
+            ), 'Start Time']
+
+            uph = df.loc[0, 'UPH']
+
+            start_time = [K6_start, K7_start, SVbackend_start, uph]
+
+            # insert data
+            ws['H11'] = start_time[3]
+            ws['H11'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            for col in ws.iter_cols(min_col=6, min_row=11, max_col=6, max_row=13):
+                i = 0
+                for cell in col:
+                    cell.value = start_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+        else:
+            # else is day
+            ws['H7'] = fdate
+
+            DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
+            DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'Start Time']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_start = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'Start Time']
+
+            K6_df = df[df['Line'].str.contains("Kitting&Cell K6")]
+            K6_start = K6_df.loc[K6_df.first_valid_index(), 'Start Time']
+
+            K7_df = df[df['Line'].str.contains("Kitting&Cell K7")]
+            K7_start = K7_df.loc[K7_df.first_valid_index(), 'Start Time']
+
+            SVbackend_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_start = SVbackend_df.loc[SVbackend_df.first_valid_index(
+            ), 'Start Time']
+
+            storage_df = df[df['Line'].str.contains("Storage line")]
+            storage_start = storage_df.loc[storage_df.first_valid_index(
+            ), 'Start Time']
+
+            CFS_df = df[df['Line'].str.contains("CFS")]
+            CFS_start = CFS_df.loc[CFS_df.first_valid_index(), 'Start Time']
+
+            uph = [df.loc[0, 'UPH'], df.loc[2, 'UPH']]
+
+            # print(df)
+
+            # store data in array
+
+            start_time = [DTFront_start, DTBack_start, K6_start,
+                          K7_start, SVbackend_start, storage_start, CFS_start]
+
+            # insert UPH
+            ws['E9'] = uph[0]
+            ws['E11'] = uph[1]
+
+            ws['E9'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            ws['E11'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            # insert shift time
+
+            for col in ws.iter_cols(min_col=3, min_row=9, max_col=3, max_row=15):
+                i = 0
+                for cell in col:
+                    cell.value = start_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+    # Night end shift
+    elif fname == 'CCC4' and fshift == 'end':
+        if isNight:
+            # gather data
+            K6_df = df[df['Line'].str.contains("Kitting&Cell K6")]
+            K6_end = K6_df.loc[K6_df.first_valid_index(), 'End shift']
+
+            K7_df = df[df['Line'].str.contains("Kitting&Cell K7")]
+            K7_end = K7_df.loc[K7_df.first_valid_index(), 'End shift']
+
+            SVbackend_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_end = SVbackend_df.loc[SVbackend_df.first_valid_index(
+            ), 'End shift']
+
+            end_time = [K6_end, K7_end, SVbackend_end]
+
+            # insert data
+            for col in ws.iter_cols(min_col=7, min_row=11, max_col=7, max_row=13):
+                i = 0
+                for cell in col:
+                    cell.value = end_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+        # else is day
+        else:
+            # else is day
+            ws['H7'] = fdate
+
+            DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
+            DTFront_end = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'End shift']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_end = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'End shift']
+
+            K6_df = df[df['Line'].str.contains("Kitting&Cell K6")]
+            K6_end = K6_df.loc[K6_df.first_valid_index(), 'End shift']
+
+            K7_df = df[df['Line'].str.contains("Kitting&Cell K7")]
+            K7_end = K7_df.loc[K7_df.first_valid_index(), 'End shift']
+
+            SVbackend_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_end = SVbackend_df.loc[SVbackend_df.first_valid_index(
+            ), 'End shift']
+
+            storage_df = df[df['Line'].str.contains("Storage line")]
+            storage_end = storage_df.loc[storage_df.first_valid_index(
+            ), 'End shift']
+
+            CFS_df = df[df['Line'].str.contains("CFS")]
+            CFS_end = CFS_df.loc[CFS_df.first_valid_index(), 'End shift']
+
+            print('im here')
+
+            # print(df)
+
+            # store data in array
+
+            end_time = [DTFront_end, DTBack_end, K6_end,
+                        K7_end, SVbackend_end, storage_end, CFS_end]
+
+            # insert shift time
+
+            for col in ws.iter_cols(min_col=4, min_row=9, max_col=4, max_row=15):
+                i = 0
+                for cell in col:
+                    cell.value = end_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
 # createWorkbook()
-# insertData()
-openpxWorkbook()
+# openpxWorkbook()
+# insertData(CCC4Df())
+insertData2(day_CCC4Df())

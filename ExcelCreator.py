@@ -1,6 +1,5 @@
 import imp
 from statistics import mode
-from tkinter.font import BOLD
 from sqlalchemy import column
 import xlsxwriter as xlwrite
 from ExcelExtractor import *
@@ -9,8 +8,6 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.cell.cell import WriteOnlyCell
-
-workbook = xlwrite.Workbook('test.xlsx')
 
 
 def createWorkbook():
@@ -78,9 +75,15 @@ def createWorkbook():
     # merge for night UPH
     ws.merge_cells(start_column=8, start_row=11, end_column=8, end_row=13)
 
+    ws.merge_cells(start_column=8, start_row=18, end_column=8, end_row=19)
+    ws.merge_cells(start_column=8, start_row=20, end_column=8, end_row=21)
+
     # merge for day UPH
     ws.merge_cells(start_column=5, start_row=9, end_column=5, end_row=10)
     ws.merge_cells(start_column=5, start_row=11, end_column=5, end_row=13)
+
+    ws.merge_cells(start_column=5, start_row=18, end_column=5, end_row=19)
+    ws.merge_cells(start_column=5, start_row=20, end_column=5, end_row=21)
 
     for col in ws.iter_cols(min_col=2, min_row=9, max_col=2, max_row=8 + len(CCC4List)):
         i = 0
@@ -158,44 +161,11 @@ def createWorkbook():
     wb.save('Consolidated Factory Workplan.xlsx')
 
 
-def insertData(factDf):
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
-    ws = wb.active
-
-    # testing
-    #df, fname, fdate = CCC4Df()
-
-    df, fname, fdate, fshift = factDf
-
-    rows = dataframe_to_rows(df, index=False, header=False)
-
-    # Night start shift
-    if fname == 'CCC4' and fshift == 'start':
-        for r_idx, row in enumerate(rows, 9):
-            for c_idx, value in enumerate(row, 6):
-                ws.cell(row=r_idx, column=c_idx, value=value)
-
-        ws['H7'] = fdate
-        print(df)
-
-    # Night end shift
-    elif fname == 'CCC4' and fshift == 'end':
-        for r_idx, row in enumerate(rows, 9):
-            for c_idx, value in enumerate(row, 4):
-                ws.cell(row=r_idx, column=c_idx, value=value)
-
-    wb.save('Consolidated Factory Workplan.xlsx')
-
-
-def insertData2(factDf):
+def CCC4DataInsert(factDf):
     wb = load_workbook('Consolidated Factory Workplan.xlsx')
     ws = wb.active
 
     df, fname, fdate, fshift, isNight = factDf
-
-    df_list = df.values.tolist()
-
-    # print(df_list)
 
     # start shift
     if fname == 'CCC4' and fshift == 'start':
@@ -343,8 +313,6 @@ def insertData2(factDf):
             CFS_df = df[df['Line'].str.contains("CFS")]
             CFS_end = CFS_df.loc[CFS_df.first_valid_index(), 'End shift']
 
-            print('im here')
-
             # print(df)
 
             # store data in array
@@ -365,7 +333,211 @@ def insertData2(factDf):
     wb.save('Consolidated Factory Workplan.xlsx')
 
 
+def CCC2DataInsert(factDf):
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    df, fname, fdate, fshift, isNight = factDf
+
+    # start shift
+    if fname == 'CCC2' and fshift == 'start':
+
+        if isNight:
+            # gather data
+            ws['H16'] = fdate
+            DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
+            DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'Start Time']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_start = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'Start Time']
+
+            SVFront_df = df[df['Line'].str.contains("SV Kitting&Cell")]
+            SVFront_start = SVFront_df.loc[SVFront_df.first_valid_index(
+            ), 'Start Time']
+
+            SVBack_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_start = SVBack_df.loc[SVBack_df.first_valid_index(
+            ), 'Start Time']
+
+            uph = [df.loc[0, 'UPH'], df.loc[2, 'UPH']]
+
+            start_time = [DTFront_start, DTBack_start, SVFront_start,
+                          DTBack_start]
+
+            # insert data
+            ws['H18'] = uph[0]
+            ws['H20'] = uph[1]
+
+            ws['H18'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            ws['H20'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            for col in ws.iter_cols(min_col=6, min_row=18, max_col=6, max_row=(17 + len(start_time))):
+                i = 0
+                for cell in col:
+                    cell.value = start_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+        else:
+            # else is day
+            ws['H16'] = fdate
+
+            DTFront_df = df[df['Line'].str.contains("DT Kitting")]
+            DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'Start Time']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_start = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'Start Time']
+
+            SVFront_df = df[df['Line'].str.contains("SV Kitting")]
+            SVFront_start = SVFront_df.loc[SVFront_df.first_valid_index(
+            ), 'Start Time']
+
+            SVBack_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_start = SVBack_df.loc[SVBack_df.first_valid_index(
+            ), 'Start Time']
+
+            # OT
+            K8_start = ''
+
+            if not df[df['Line'].str.contains("K8")].empty:
+                K8_df = df[df['Line'].str.contains("K8")]
+                K8_start = K8_df.loc[K8_df.first_valid_index(
+                ), 'Start Time']
+
+            ARB_df = df[df['Line'].str.contains("ARB")]
+            ARB_start = ARB_df.loc[ARB_df.first_valid_index(
+            ), 'Start Time']
+
+            uph = [df.loc[0, 'UPH'], df.loc[2, 'UPH']]
+
+            # print(df)
+
+            # store data in array
+
+            start_time = [DTFront_start, DTBack_start,
+                          SVFront_start, SVbackend_start, K8_start, ARB_start]
+
+            # insert UPH
+            ws['E18'] = uph[0]
+            ws['E20'] = uph[1]
+
+            ws['E18'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            ws['E20'].alignment = Alignment(
+                horizontal='center', vertical='center')
+
+            # insert shift time
+
+            for col in ws.iter_cols(min_col=3, min_row=18, max_col=3, max_row=(17+len(start_time))):
+                i = 0
+                for cell in col:
+                    cell.value = start_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+    # Night end shift
+    elif fname == 'CCC2' and fshift == 'end':
+        if isNight:
+            # gather data
+            DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
+            DTFront_end = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'End shift']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_end = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'End shift']
+
+            SVFront_df = df[df['Line'].str.contains("SV Kitting&Cell")]
+            SVFront_end = SVFront_df.loc[SVFront_df.first_valid_index(
+            ), 'End shift']
+
+            SVbackend_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_end = SVbackend_df.loc[SVbackend_df.first_valid_index(
+            ), 'End shift']
+
+            # OT
+            K8_end = ''
+
+            if not df[df['Line'].str.contains("K8")].empty:
+                K8_df = df[df['Line'].str.contains("K8")]
+                K8_end = K8_df.loc[K8_df.first_valid_index(
+                ), 'End shift']
+
+            end_time = [DTFront_end, DTBack_end,
+                        SVFront_end, SVbackend_end, K8_end]
+
+            # insert data
+            for col in ws.iter_cols(min_col=7, min_row=18, max_col=7, max_row=(17 + len(end_time))):
+                i = 0
+                for cell in col:
+                    cell.value = end_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+        # else is day
+        else:
+            ws['H16'] = fdate
+
+            DTFront_df = df[df['Line'].str.contains("DT Kitting")]
+            DTFront_end = DTFront_df.loc[DTFront_df.first_valid_index(
+            ), 'End shift']
+
+            DTBack_df = df[df['Line'].str.contains("DT Backend")]
+            DTBack_end = DTBack_df.loc[DTBack_df.first_valid_index(
+            ), 'End shift']
+
+            SVFront_df = df[df['Line'].str.contains("SV Kitting")]
+            SVFront_end = SVFront_df.loc[SVFront_df.first_valid_index(
+            ), 'End shift']
+
+            SVBack_df = df[df['Line'].str.contains("SV Backend")]
+            SVbackend_end = SVBack_df.loc[SVBack_df.first_valid_index(
+            ), 'End shift']
+
+            # OT
+            K8_start = ''
+
+            if not df[df['Line'].str.contains("K8")].empty:
+                K8_df = df[df['Line'].str.contains("K8")]
+                K8_end = K8_df.loc[K8_df.first_valid_index(
+                ), 'End shift']
+
+            ARB_df = df[df['Line'].str.contains("ARB")]
+            ARB_end = ARB_df.loc[ARB_df.first_valid_index(
+            ), 'End shift']
+
+            # store data in array
+
+            end_time = [DTFront_end, DTBack_end,
+                        SVFront_end, SVbackend_end, K8_start, ARB_end]
+
+            # insert shift time
+
+            for col in ws.iter_cols(min_col=4, min_row=18, max_col=4, max_row=(17+len(end_time))):
+                i = 0
+                for cell in col:
+                    cell.value = end_time[i]
+                    cell.alignment = Alignment(horizontal='center')
+
+                    i += 1
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
 # createWorkbook()
-# openpxWorkbook()
 # insertData(CCC4Df())
-insertData2(day_CCC4Df())
+# CCC4DataInsert(night_CCC4Df())
+# CCC4DataInsert(day_CCC4Df())
+
+
+# CCC2DataInsert(day_CCC2Df())

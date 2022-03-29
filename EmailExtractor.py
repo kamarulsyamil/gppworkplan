@@ -55,7 +55,7 @@ def APCClogic():
     result = []
     for k, v in new_d.items():
 
-        #select dataframe by date
+        #select dataframe by
         if date in v.to_string() :
             print('ass')
             result.append(v)

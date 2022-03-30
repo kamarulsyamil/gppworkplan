@@ -8,6 +8,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.cell.cell import WriteOnlyCell
+from itertools import chain
 
 
 def createWorkbook():
@@ -534,10 +535,36 @@ def CCC2DataInsert(factDf):
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
-# createWorkbook()
-# insertData(CCC4Df())
-# CCC4DataInsert(night_CCC4Df())
-# CCC4DataInsert(day_CCC4Df())
 
+def APCCDataInsert(df):
+    first_result = []
+    second_result = []
+    first_shift, second_shift = df
 
-# CCC2DataInsert(day_CCC2Df())
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    for i in first_shift:
+        first_result.append(i.split(' - '))
+
+    for i in second_shift:
+        second_result.append(i.split(' - '))
+
+    first_shift_list = list(chain.from_iterable(zip(*first_result)))
+    second_shift_list = list(chain.from_iterable(zip(*second_result)))
+
+    i = 0
+    for col in ws.iter_cols(min_col=3, max_col=4, min_row=34, max_row=37):
+        for cell in col:
+            cell.value = list(first_shift_list)[i]
+            i += 1
+
+    i = 0
+    for col in ws.iter_cols(min_col=6, max_col=7, min_row=34, max_row=37):
+        for cell in col:
+            cell.value = list(second_shift_list)[i]
+            i += 1
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+    # print(list(l))

@@ -4,6 +4,7 @@ from numpy import NaN
 import pandas as pd
 import win32com.client
 import datetime
+import textwrap
 
 date = datetime.datetime.today()
 
@@ -11,7 +12,9 @@ date = datetime.datetime.today()
 def getTableEmail():
     factName = 'ICC'
 
-    email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+    #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+    email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
+
     outlook = win32com.client.Dispatch(
         "Outlook.Application").GetNamespace("MAPI")
 
@@ -41,7 +44,12 @@ def getTableEmail():
         new_header = data[3].iloc[0]
         df = data[3][1:]
         df.columns = new_header
-        print(df)
+
+        shift_time = df.loc[1]['FRONT END'].replace(" ", "")
+
+        start_time = shift_time[:len(shift_time)//2]
+        end_time = shift_time[:len(shift_time)//2]
+        print(start_time)
 
     # separate tables by date
 
@@ -82,7 +90,7 @@ def APCClogic():
     return first_shift, second_shift
 
 
-def ICClogic():
+#def ICClogic():
 
     # print(df)
 

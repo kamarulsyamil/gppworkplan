@@ -2,6 +2,7 @@ from cmath import nan
 import os
 from numpy import NaN
 import pandas as pd
+from scipy.fftpack import shift
 import win32com.client
 import datetime
 import textwrap
@@ -13,7 +14,7 @@ def getTableEmail():
     factName = 'ICC'
 
     #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-    email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
+    email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
 
     outlook = win32com.client.Dispatch(
         "Outlook.Application").GetNamespace("MAPI")
@@ -45,12 +46,11 @@ def getTableEmail():
         df = data[3][1:]
         df.columns = new_header
 
-        shift_time = df.loc[1]['FRONT END'].replace(" ", "")
+        # print(df1)
 
-        start_time = shift_time[:len(shift_time)//2]
-        end_time = shift_time[:len(shift_time)//2]
-        print(start_time)
-
+        # end_time = shift_time[:len(shift_time)//2] [shift_time[i:i+chunk_size] for i in range(0, chunk, chunk_size)]
+        # print([shift_time[i:i+chunk_size]
+        #       for i in range(0, chunk, chunk_size)])
     # separate tables by date
 
     return df, factName
@@ -89,9 +89,6 @@ def APCClogic():
 
     return first_shift, second_shift
 
-
-#def ICClogic():
-
     # print(df)
 
     # BRH dont have shift times so maybe just put the hours?
@@ -99,5 +96,36 @@ def APCClogic():
     # ICC
 
 
-getTableEmail()
+def ICClogic():
+
+    df1 = []
+
+    df, factoryname = getTableEmail()
+
+    #shift_time = df.loc[1]['BACK END'].replace(" ", "")
+
+    for i, row in df.iterrows():
+        data = str(row['BACK END']).replace(" ", "")
+
+        if len(data) > 12:
+            chunk, chunk_size = len(data), len(data)//2
+
+            split_data = [data[i:i+chunk_size]
+                          for i in range(0, chunk, chunk_size)]
+            df1.append(split_data)
+        else:
+            chunk, chunk_size = len(data), len(data)//1
+
+            split_data = [data[i:i+chunk_size]
+                          for i in range(0, chunk, chunk_size)]
+            df1.append(split_data)
+
+    front_df = pd.DataFrame(df1, columns=["first_shift"])
+
+    print(front_df)
+
+
+ICClogic()
+
+
 # APCClogic()

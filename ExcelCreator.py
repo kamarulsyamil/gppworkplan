@@ -30,7 +30,8 @@ def createWorkbook():
 
     APCCList = ['Desktop', 'HYBRID 1', 'HYBRID 2', 'Server']
 
-    ICCList = ['Line 1', 'Line 2', 'Line 3']
+    ICCList = ['Line 1 Frontend', 'Line 2 Frontend', 'Line 3 Frontend',
+               'Line 1 Backend', 'Line 2 Backend', 'Line 3 Backend']
 
     subheader = ['Line', 'Start Time', 'End Time',
                  'UPH', 'Start Time', 'End Time', 'UPH']

@@ -6,12 +6,12 @@ import os.path
 
 def main():
     #f = "C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\Production Line Arrangement of 2022.xlsx"
-    f = r"C:\Users\Yusuf_Budiawan\Documents\Factory Work Plan\Production Line Arrangement of 2022.xlsx"
+    f = r"sources\Production Line Arrangement of 2022.xlsx"
 
     # create workbook named Consolidated Factory Workplan
-    # if not os.path.exists("C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\ExcelExtractor\\Consolidated Factory Workplan.xlsx"):
-    #     print("Creating workbook if not exist...")
-    #     ExcelCreator.createWorkbook()
+    if not os.path.exists("C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\ExcelExtractor\\Consolidated Factory Workplan.xlsx"):
+        print("Creating workbook...")
+        ExcelCreator.createWorkbook()
 
     print("Processing data...")
     # gather dataframe

@@ -1,7 +1,7 @@
-import imp
 from statistics import mode
 from sqlalchemy import column
 import xlsxwriter as xlwrite
+from EmailExtractor import ICClogic
 from ExcelExtractor import *
 import pandas as pd
 from openpyxl import Workbook, load_workbook
@@ -9,6 +9,7 @@ from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.cell.cell import WriteOnlyCell
 from itertools import chain
+import re
 
 
 def createWorkbook():
@@ -73,7 +74,7 @@ def createWorkbook():
             cell.fill = PatternFill("solid", fgColor="00FFFF00")
 
     # add factory lines
-        #CCC4 and CCC2
+        # CCC4 and CCC2
     # merge for night UPH
     ws.merge_cells(start_column=8, start_row=11, end_column=8, end_row=13)
 
@@ -126,7 +127,7 @@ def createWorkbook():
 
             for cell in row:
                 cell.value = header[i]
-                #cell.border = double
+                # cell.border = double
                 cell.font = Font(bold=True)
                 cell.fill = PatternFill("solid", fgColor="00FFCC99")
                 i += 1
@@ -568,4 +569,112 @@ def APCCDataInsert(df):
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
-    # print(list(l))
+
+def ICCDataInsert(df):
+    # frontend and backend
+    front_df, back_df = df
+
+    front_first_shift = []
+    front_second_shift = []
+    back_first_shift = []
+    back_second_shift = []
+
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    # if df has two columns put the second column in the second shift col in the excel
+    # while the first one put in the first column
+
+    # FRONTEND
+    if {'second_shift'}.issubset(front_df.columns):
+        # print(front_df['second_shift'][0].split('–'))
+
+        for i, row in front_df.iterrows():
+            # front_result.append(i.split('–'))
+            # print(row['first_shift'].split('-'))
+
+            front_first_shift.append(re.split('\-|\–', row['first_shift']))
+            front_second_shift.append(re.split('\-|\–', row['second_shift']))
+
+            front_first_list = list(
+                chain.from_iterable(zip(*front_first_shift)))
+            front_second_list = list(
+                chain.from_iterable(zip(*front_second_shift)))
+
+        #print(re.split('\-|\–', row['first_shift']))
+
+        i = 0
+        for col in ws.iter_cols(min_col=3, max_col=4, min_row=42, max_row=44):
+            for cell in col:
+                cell.value = list(front_first_list)[i]
+                i += 1
+
+        i = 0
+        for col in ws.iter_cols(min_col=6, max_col=7, min_row=42, max_row=44):
+            for cell in col:
+                cell.value = list(front_second_list)[i]
+                i += 1
+
+    else:
+        for i, row in front_df.iterrows():
+
+            front_first_shift.append(re.split('\-|\–', row['first_shift']))
+
+            front_first_list = list(
+                chain.from_iterable(zip(*front_first_shift)))
+
+        i = 0
+        for col in ws.iter_cols(min_col=3, max_col=4, min_row=42, max_row=44):
+            for cell in col:
+                cell.value = list(front_first_list)[i]
+                i += 1
+
+    # BACKEND
+    if {'second_shift'}.issubset(back_df.columns):
+
+        for i, row in front_df.iterrows():
+
+            back_first_shift.append(re.split('\-|\–', row['first_shift']))
+            back_second_shift.append(re.split('\-|\–', row['second_shift']))
+
+            back_first_list = list(
+                chain.from_iterable(zip(*front_first_shift)))
+            back_second_list = list(
+                chain.from_iterable(zip(*front_second_shift)))
+
+            #print(re.split('\-|\–', row['first_shift']))
+
+        i = 0
+        for col in ws.iter_cols(min_col=3, max_col=4, min_row=42, max_row=44):
+            for cell in col:
+                cell.value = list(back_first_list)[i]
+                i += 1
+
+        i = 0
+        for col in ws.iter_cols(min_col=6, max_col=7, min_row=45, max_row=47):
+            for cell in col:
+                cell.value = list(back_second_list)[i]
+                i += 1
+
+    else:
+        for i, row in back_df.iterrows():
+
+            back_first_shift.append(re.split('\-|\–|a', row['first_shift']))
+
+            back_first_list = list(
+                chain.from_iterable(zip(*back_first_shift)))
+
+            for i, n in enumerate(back_first_list):
+                if n == 'n':
+                    back_first_list[i] = ''
+
+        i = 0
+        for col in ws.iter_cols(min_col=3, max_col=4, min_row=45, max_row=47):
+            for cell in col:
+                cell.value = list(back_first_list)[i]
+                i += 1
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
+# ICCDataInsert(ICClogic())

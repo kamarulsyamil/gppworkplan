@@ -11,10 +11,11 @@ date = datetime.datetime.today()
 
 
 def getTableEmail():
-    factName = 'ICC'
+    factName = 'APCC'
 
     #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-    email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+    #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+    email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
 
     outlook = win32com.client.Dispatch(
         "Outlook.Application").GetNamespace("MAPI")
@@ -100,12 +101,14 @@ def ICClogic():
 
     df1 = []
 
+    df2 = []
+
     df, factoryname = getTableEmail()
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
 
     for i, row in df.iterrows():
-        data = str(row['BACK END']).replace(" ", "")
+        data = str(row['FRONT END']).replace(" ", "")
 
         if len(data) > 12:
             chunk, chunk_size = len(data), len(data)//2
@@ -113,6 +116,9 @@ def ICClogic():
             split_data = [data[i:i+chunk_size]
                           for i in range(0, chunk, chunk_size)]
             df1.append(split_data)
+
+            front_df = pd.DataFrame(
+                df1, columns=["first_shift", "second_shift"])
         else:
             chunk, chunk_size = len(data), len(data)//1
 
@@ -120,12 +126,33 @@ def ICClogic():
                           for i in range(0, chunk, chunk_size)]
             df1.append(split_data)
 
-    front_df = pd.DataFrame(df1, columns=["first_shift"])
+            front_df = pd.DataFrame(df1, columns=["first_shift"])
 
-    print(front_df)
+    # Backend array
+    for i, row in df.iterrows():
+        back_data = str(row['BACK END']).replace(" ", "")
+
+        if len(back_data) > 12:
+            chunk, chunk_size = len(back_data), len(back_data)//2
+
+            split_data = [back_data[i:i+chunk_size]
+                          for i in range(0, chunk, chunk_size)]
+            df2.append(split_data)
+
+            back_df = pd.DataFrame(
+                df2, columns=["first_shift", "second_shift"])
+        else:
+            chunk, chunk_size = len(back_data), len(back_data)//1
+
+            split_data = [back_data[i:i+chunk_size]
+                          for i in range(0, chunk, chunk_size)]
+            df2.append(split_data)
+
+            back_df = pd.DataFrame(
+                df2, columns=["first_shift"])
+
+    return front_df, back_df
 
 
-ICClogic()
-
-
+# ICClogic()
 # APCClogic()

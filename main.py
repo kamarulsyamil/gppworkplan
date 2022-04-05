@@ -1,4 +1,4 @@
-from EmailExtractor import APCClogic
+from EmailExtractor import APCClogic, ICClogic
 import ExcelCreator
 import ExcelExtractor
 import os.path
@@ -32,12 +32,17 @@ def main():
     ExcelCreator.CCC4DataInsert(CCC4_day_df_clean)
     ExcelCreator.CCC4DataInsert(CCC4_night_df_clean)
 
+    # insert data for CCC2
     ExcelCreator.CCC2DataInsert(CCC2_day_df_clean)
     ExcelCreator.CCC2DataInsert(CCC2_night_df_clean)
 
     print("Data insertion to workbook successful!")
 
-#    ExcelCreator.APCCDataInsert(APCClogic())
+    # insert data for APCC
+    ExcelCreator.APCCDataInsert(APCClogic())
+
+    # insert data for ICCC
+    # ExcelCreator.ICCDataInsert(ICClogic())
 
 
 if __name__ == "__main__":

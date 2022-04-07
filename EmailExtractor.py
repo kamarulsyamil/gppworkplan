@@ -10,9 +10,10 @@ import re
 
 date = datetime.datetime.today()
 
+email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\APCC Work Plan.msg"
+ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
 #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-#email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
+#email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
 
 # date regex [0-3][0-9]-[A-Z][a-z][a-z]
 
@@ -109,7 +110,7 @@ def ICClogic():
 
     df2 = []
 
-    df, factoryname = getTableEmail(email_dir)
+    df, factoryname = getTableEmail(ICCemail)
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
 

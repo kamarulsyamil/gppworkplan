@@ -9,7 +9,7 @@ def main():
     f = r"sources\Production Line Arrangement of 2022.xlsx"
 
     # create workbook named Consolidated Factory Workplan
-    if not os.path.exists("C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\ExcelExtractor\\Consolidated Factory Workplan.xlsx"):
+    if not os.path.exists(r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\Consolidated Factory Workplan.xlsx"):
         print("Creating workbook...")
         ExcelCreator.createWorkbook()
 
@@ -52,7 +52,7 @@ def main():
     ExcelCreator.CCC2DataInsert(CCC2_night_df_clean2)
 
     # insert data for ICC
-    # ExcelCreator.ICCDataInsert(ICClogic())
+    ExcelCreator.ICCDataInsert(ICClogic())
 
     # insert data for APCC
     ExcelCreator.APCCDataInsert(APCClogic())

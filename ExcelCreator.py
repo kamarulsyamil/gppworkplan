@@ -35,6 +35,8 @@ def createWorkbook():
     ICCList = ['Line 1 Frontend', 'Line 2 Frontend', 'Line 3 Frontend',
                'Line 1 Backend', 'Line 2 Backend', 'Line 3 Backend']
 
+    CCC6List = ['Line 1','Line 2','Line 3','Line 4','Line 5','Line 6','Line 7','Line 8','Line 9','Line 10']
+
     subheader = ['Line', 'Start Time', 'End Time',
                  'UPH', 'Start Time', 'End Time', 'UPH']
 

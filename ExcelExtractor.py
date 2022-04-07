@@ -21,6 +21,8 @@ def day_CCC4(filepath):
     max_row = 0
     max_col = 0
 
+    delimiter = []
+
     xl = pd.ExcelFile(filepath)
 
     # night shift
@@ -32,12 +34,17 @@ def day_CCC4(filepath):
     max_row = df.shape[0]
     max_col = df.shape[1]
 
-    df2 = df.iloc[max_row-12:max_row, max_col-8:max_col]
+    df2 = df.iloc[max_row-39:max_row-12, max_col-8:max_col]
+
     df3 = df2.dropna(how='all', axis=1)
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
 
-    return df5
+    delimiter = df5[df5['11'] == 'Total HC:'].index.values
+
+    fir_table, sec_table = df5.iloc[:delimiter[0]+1], df5.iloc[delimiter[0]+1:]
+
+    return fir_table.reset_index(drop=True), sec_table.reset_index(drop=True)
 
 
 def night_CCC4(filepath):
@@ -55,12 +62,16 @@ def night_CCC4(filepath):
     max_row = df.shape[0]
     max_col = df.shape[1]
 
-    df2 = df.iloc[max_row-10:max_row, max_col-8:max_col]
+    df2 = df.iloc[max_row-31:max_row-10, max_col-8:max_col]
     df3 = df2.dropna(how='all', axis=1)
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
 
-    return df5
+    delimiter = df5[df5['12'] == 'Total HC:'].index.values
+
+    fir_table, sec_table = df5.iloc[:delimiter[0]+1], df5.iloc[delimiter[0]+1:]
+
+    return fir_table.reset_index(drop=True), sec_table.reset_index(drop=True)
 
 # ----------------------------------------------
 # process excel shifts of CCC2
@@ -80,12 +91,18 @@ def day_CCC2(filepath):
     max_row = df.shape[0]
     max_col = df.shape[1]
 
-    df2 = df.iloc[max_row-12:max_row, max_col-18:max_col-8]
+    df2 = df.iloc[max_row-39:max_row-12, max_col-18:max_col-8]
     df3 = df2.dropna(how='all', axis=1)
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
 
-    return df5
+    # print(df5)
+
+    delimiter = df5[df5['2'] == 'Total HC:'].index.values
+
+    fir_table, sec_table = df5.iloc[:delimiter[0]+1], df5.iloc[delimiter[0]+1:]
+
+    return fir_table.reset_index(drop=True), sec_table.reset_index(drop=True)
 
 
 def night_CCC2(filepath):
@@ -101,12 +118,18 @@ def night_CCC2(filepath):
     max_row = df.shape[0]
     max_col = df.shape[1]
 
-    df2 = df.iloc[max_row-10:max_row, max_col-18:max_col-9]
+    df2 = df.iloc[max_row-31:max_row-10, max_col-18:max_col-9]
     df3 = df2.dropna(how='all', axis=1)
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
 
-    return df5
+    # print(df5)
+
+    delimiter = df5[df5['3'] == 'Total HC:'].index.values
+
+    fir_table, sec_table = df5.iloc[:delimiter[0]+1], df5.iloc[delimiter[0]+1:]
+
+    return fir_table.reset_index(drop=True), sec_table.reset_index(drop=True)
 
 # ----------------------------------------------
 # process dataframe shifts of CCC4
@@ -119,12 +142,15 @@ def day_CCC4Df(df):
     rightDf = df
 
     if not rightDf[rightDf['11'].str.contains("Next Day Shift")].empty:
-        rightDf.columns = ['Line', 'Start Time', 'End Time', 'UPH']
 
-        fNameDf = rightDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = rightDf['Line'].str.extract(
+        rightDfclean = rightDf.dropna(how='all', axis=1)
+
+        rightDfclean.columns = ['Line', 'Start Time', 'End Time', 'UPH']
+
+        fNameDf = rightDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = rightDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = rightDf[rightDf['Line'].str.contains("Day")].empty
+        isNight = rightDfclean[rightDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -134,19 +160,21 @@ def day_CCC4Df(df):
 
         #df1 = rightDf.drop(columns=['4'])
 
-        df2 = rightDf.drop([0, 1, (rightDf.shape[0])-1])
+        df2 = rightDfclean.drop([0, 1, (rightDfclean.shape[0])-1])
 
     # Means that the DF is on off duty time time or end shift.
     # process df
 
     elif not rightDf[rightDf['11'].str.contains("Today")].empty:
 
-        rightDf.columns = ['Line', 'OT', 'HC', 'End shift']
+        rightDfclean = rightDf.dropna(how='all', axis=1)
 
-        fNameDf = rightDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = rightDf['Line'].str.extract(
+        rightDfclean.columns = ['Line', 'OT', 'HC', 'End shift']
+
+        fNameDf = rightDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = rightDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = rightDf[rightDf['Line'].str.contains("Day")].empty
+        isNight = rightDfclean[rightDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -154,7 +182,7 @@ def day_CCC4Df(df):
 
         shift = 'end'
 
-        df2 = rightDf.drop([0, 1, (rightDf.shape[0])-1])
+        df2 = rightDfclean.drop([0, 1, (rightDfclean.shape[0])-1])
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 
@@ -166,12 +194,15 @@ def night_CCC4Df(df):
     rightDf = df
 
     if not rightDf[rightDf['12'].str.contains("Next Night-Shift")].empty:
-        rightDf.columns = ['Line', 'Start Time', 'End Time', '4', 'UPH']
 
-        fNameDf = rightDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = rightDf['Line'].str.extract(
+        rightDfclean = rightDf.dropna(how='all', axis=1)
+
+        rightDfclean.columns = ['Line', 'Start Time', 'End Time', '4', 'UPH']
+
+        fNameDf = rightDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = rightDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = rightDf[rightDf['Line'].str.contains("Day")].empty
+        isNight = rightDfclean[rightDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -179,7 +210,7 @@ def night_CCC4Df(df):
 
         shift = 'start'
 
-        df1 = rightDf.drop(columns=['4'])
+        df1 = rightDfclean.drop(columns=['4'])
 
         df2 = df1.drop([0, 1, (df1.shape[0])-1])
 
@@ -188,12 +219,14 @@ def night_CCC4Df(df):
 
     elif not rightDf[rightDf['12'].str.contains("Today")].empty:
 
-        rightDf.columns = ['Line', 'OT', 'HC', 'End shift']
+        rightDfclean = rightDf.dropna(how='all', axis=1)
 
-        fNameDf = rightDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = rightDf['Line'].str.extract(
+        rightDfclean.columns = ['Line', 'OT', 'HC', 'End shift']
+
+        fNameDf = rightDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = rightDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = rightDf[rightDf['Line'].str.contains("Day")].empty
+        isNight = rightDfclean[rightDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -201,9 +234,7 @@ def night_CCC4Df(df):
 
         shift = 'end'
 
-        #df1 = rightDf.drop(columns=['Line', 'OT', 'HC'])
-
-        df2 = rightDf.drop([0, 1, (rightDf.shape[0])-1])
+        df2 = rightDfclean.drop([0, 1, (rightDfclean.shape[0])-1])
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 
@@ -218,20 +249,16 @@ def day_CCC2Df(df):
     #This is CCC2
     leftDf = df
 
-    # print(leftDf)
-
-    # print(date)
-
-    # print("The name of the factory is: ", fName)
-
     if not leftDf[leftDf['2'].str.contains("Next Day Shift")].empty:
 
-        leftDf.columns = ['Line', 'Start Time', 'End Time', 'UPH']
+        leftDfclean = leftDf.dropna(how='all', axis=1)
 
-        fNameDf = leftDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = leftDf['Line'].str.extract(
+        leftDfclean.columns = ['Line', 'Start Time', 'End Time', 'UPH']
+
+        fNameDf = leftDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = leftDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = leftDf[leftDf['Line'].str.contains("Day")].empty
+        isNight = leftDfclean[leftDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -239,15 +266,18 @@ def day_CCC2Df(df):
 
         shift = 'start'
 
-        df2 = leftDf.drop([0, 1, (leftDf.shape[0])-1])
+        df2 = leftDfclean.drop([0, 1, (leftDfclean.shape[0])-1])
 
     elif not leftDf[leftDf['2'].str.contains("Today")].empty:
-        leftDf.columns = ['Line', 'OT', 'HC', 'End shift']
 
-        fNameDf = leftDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = leftDf['Line'].str.extract(
+        leftDfclean = leftDf.dropna(how='all', axis=1)
+
+        leftDfclean.columns = ['Line', 'OT', 'HC', 'End shift']
+
+        fNameDf = leftDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = leftDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = leftDf[leftDf['Line'].str.contains("Day")].empty
+        isNight = leftDfclean[leftDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -255,7 +285,7 @@ def day_CCC2Df(df):
 
         shift = 'end'
 
-        df2 = leftDf.drop([0, 1, (leftDf.shape[0])-1])
+        df2 = leftDfclean.drop([0, 1, (leftDfclean.shape[0])-1])
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 
@@ -268,12 +298,15 @@ def night_CCC2Df(df):
     leftDf = df
 
     if not leftDf[leftDf['3'].str.contains("Next Night-Shift")].empty:
-        leftDf.columns = ['Line', 'Start Time', 'End Time', '4', 'UPH']
 
-        fNameDf = leftDf['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = leftDf['Line'].str.extract(
+        leftDfclean = leftDf.dropna(how='all', axis=1)
+
+        leftDfclean.columns = ['Line', 'Start Time', 'End Time', '4', 'UPH']
+
+        fNameDf = leftDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = leftDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = leftDf[leftDf['Line'].str.contains("Day")].empty
+        isNight = leftDfclean[leftDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -282,7 +315,7 @@ def night_CCC2Df(df):
         shift = 'start'
         print("Start shift.")
 
-        df1 = leftDf.drop(columns=['4'])
+        df1 = leftDfclean.drop(columns=['4'])
 
         df2 = df1.drop([0, 1, (df1.shape[0])-1])
 
@@ -293,12 +326,14 @@ def night_CCC2Df(df):
         if not leftDf[leftDf['3'].str.contains("K8")].empty:
             leftDf1 = leftDf.drop(columns=['6'])
 
-        leftDf1.columns = ['Line', 'OT', 'HC', 'End shift']
+        leftDfclean = leftDf1.dropna(how='all', axis=1)
 
-        fNameDf = leftDf1['Line'].str.extract(r'(CCC[2-4])')
-        dateDf = leftDf1['Line'].str.extract(
+        leftDfclean.columns = ['Line', 'OT', 'HC', 'End shift']
+
+        fNameDf = leftDfclean['Line'].str.extract(r'(CCC[2-4])')
+        dateDf = leftDfclean['Line'].str.extract(
             r'([A-Z][a-z][a-z][.,-][0-3][0-9])')
-        isNight = leftDf1[leftDf1['Line'].str.contains("Day")].empty
+        isNight = leftDfclean[leftDfclean['Line'].str.contains("Day")].empty
 
         fName = fNameDf.loc[0].iat[0]
         date = dateDf.loc[0].iat[0]
@@ -306,7 +341,10 @@ def night_CCC2Df(df):
 
         shift = 'end'
 
-        df2 = leftDf1.drop([0, 1, (leftDf1.shape[0])-1])
+        df2 = leftDfclean.drop([0, 1, (leftDfclean.shape[0])-1])
+
+    else:
+        print("ASS")
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 
@@ -320,5 +358,7 @@ def night_CCC2Df(df):
 # print(filterDf())
 # print(night_CCC2(f))
 
-# day_CCC2(f)
+
+# print(night_CCC2(f)[1])
+# night_CCC2Df(night_CCC2(f)[1])
 # print(CCC2Df())

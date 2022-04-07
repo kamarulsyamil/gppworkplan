@@ -6,24 +6,28 @@ from scipy.fftpack import shift
 import win32com.client
 import datetime
 import textwrap
+import re
 
 date = datetime.datetime.today()
 
+#email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+#email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
+email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
 
-def getTableEmail():
-    factName = 'APCC'
+# date regex [0-3][0-9]-[A-Z][a-z][a-z]
 
-    #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-    #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
-    email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
 
+def getTableEmail(dir):
     outlook = win32com.client.Dispatch(
         "Outlook.Application").GetNamespace("MAPI")
 
-    msg = outlook.OpenSharedItem(email_dir)
+    msg = outlook.OpenSharedItem(dir)
+
+    factName = re.search('(ICC|APCC)', msg.Body).group(0)
 
     # dataframe of APCC table from email
     data = pd.read_html(msg.HTMLBody)
+    # print(msg.Body)
 
     #data2 = data1.drop_duplicates(subset='0')
 
@@ -54,19 +58,21 @@ def getTableEmail():
         #       for i in range(0, chunk, chunk_size)])
     # separate tables by date
 
+    # print(date.strftime('%d-%b'))
+
     return df, factName
-    # date_format = date.strftime('%d-%b')
 
 # APCC
 
 
 def APCClogic():
+    # date = date.strftime('%d-%b')
     date = '22-Feb'
 
     first_shift = []
     second_shift = []
 
-    df, factName = getTableEmail()
+    df, factName = getTableEmail(email_dir)
 
     df['group_no'] = df.isnull().all(axis=1).cumsum()
 
@@ -88,7 +94,7 @@ def APCClogic():
     first_shift = result[0]['Frontend']
     second_shift = result[0]['Backend']
 
-    return first_shift, second_shift
+    return first_shift, second_shift, date
 
     # print(df)
 
@@ -103,7 +109,7 @@ def ICClogic():
 
     df2 = []
 
-    df, factoryname = getTableEmail()
+    df, factoryname = getTableEmail(email_dir)
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
 
@@ -154,5 +160,6 @@ def ICClogic():
     return front_df, back_df
 
 
+getTableEmail(email_dir)
 # ICClogic()
 # APCClogic()

@@ -10,6 +10,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.cell.cell import WriteOnlyCell
 from itertools import chain
 import re
+import datetime
 
 
 def createWorkbook():
@@ -59,6 +60,19 @@ def createWorkbook():
     ws['K9'].fill = PatternFill("solid", fgColor="00FFFF00")
     ws['K8'].border = double
     ws['K9'].border = double
+
+    # title of sheet
+    ws.merge_cells(start_column=2, start_row=3, end_column=8, end_row=4)
+    ws['B3'] = "Consolidated Factory Workplan"
+    ws['B3'].font = Font(b=True, size=18)
+    ws['B3'].alignment = Alignment(horizontal='center', vertical='center')
+
+    # updated on info
+    ws.merge_cells(start_column=2, start_row=5, end_column=4, end_row=5)
+    ws['B5'] = "Updated on :"
+    ws['B5'].alignment = Alignment(horizontal='left')
+
+    ws.merge_cells(start_column=5, start_row=5, end_column=7, end_row=5)
 
     # subheader and cell color
     for col in ws.iter_cols(min_col=2, min_row=8, max_col=2, max_row=63):
@@ -541,10 +555,12 @@ def CCC2DataInsert(factDf):
 def APCCDataInsert(df):
     first_result = []
     second_result = []
-    first_shift, second_shift = df
+    first_shift, second_shift, date = df
 
     wb = load_workbook('Consolidated Factory Workplan.xlsx')
     ws = wb.active
+
+    ws['H32'] = date
 
     for i in first_shift:
         first_result.append(i.split(' - '))
@@ -566,6 +582,9 @@ def APCCDataInsert(df):
         for cell in col:
             cell.value = list(second_shift_list)[i]
             i += 1
+
+    ws['E5'] = datetime.datetime.today()
+    ws['E5'].alignment = Alignment(horizontal='left')
 
     wb.save('Consolidated Factory Workplan.xlsx')
 

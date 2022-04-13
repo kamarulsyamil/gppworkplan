@@ -1,4 +1,5 @@
 from statistics import mode
+from time import gmtime, strftime
 from sqlalchemy import column
 import xlsxwriter as xlwrite
 from EmailExtractor import ICClogic
@@ -22,7 +23,7 @@ def createWorkbook():
 
     header = ['Factory/Site', '', '', '', 'Date', '', '']
 
-    fName = ['CCC4', 'CCC2', 'CCC6', 'APCC', 'ICC', 'EMFP', 'BRH1']
+    fName = ['CCC4 (CST)', 'CCC2 (CST)', 'CCC6 (CST)', 'APCC (MYT)', 'ICC (IST)', 'EMFP (CET)', 'BRH1 (BRT)']
 
     CCC4List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell K6',
                 'SV Kitting&Cell K7', 'SV Backend', 'Storage line', 'CFS']
@@ -585,8 +586,9 @@ def APCCDataInsert(df):
             cell.value = list(second_shift_list)[i]
             i += 1
 
-    ws['E5'] = datetime.datetime.today()
+    ws['E5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     ws['E5'].alignment = Alignment(horizontal='left')
+    ws['H5'] = strftime("%Z%z", gmtime())
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
@@ -697,5 +699,9 @@ def ICCDataInsert(df):
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
-
-# ICCDataInsert(ICClogic())
+#print(strftime("%Z%z", gmtime()))
+# # ICCDataInsert(ICClogic())
+# now = datetime.datetime.today()
+# current_time = now.strftime("%H:%M:%S")
+# print("Current Time =", current_time)
+# print("Your Time Zone is GMT", strftime("%z", gmtime()))

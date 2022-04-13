@@ -3,12 +3,12 @@ import os
 from numpy import NaN
 import pandas as pd
 from scipy.fftpack import shift
-import win32com.client
+import win32com.client as client
 import datetime
 import textwrap
 import re
 
-date = datetime.datetime.today()
+today = datetime.date.today()
 
 email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\APCC Work Plan.msg"
 ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
@@ -18,11 +18,38 @@ ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Fac
 # date regex [0-3][0-9]-[A-Z][a-z][a-z]
 
 
-def getTableEmail(dir):
-    outlook = win32com.client.Dispatch(
-        "Outlook.Application").GetNamespace("MAPI")
+def getTableEmail():
+    # create instance of Outlook
+    outlook = client.Dispatch('Outlook.Application')
 
-    msg = outlook.OpenSharedItem(dir)
+    # get the inbox
+    namespace = outlook.GetNameSpace('MAPI')
+    inbox = namespace.GetDefaultFolder(6)
+
+    # the email I want to download a file from
+
+    # get only mail items from the inbox (other items can exists and will return an error if you try get the subject line of a non-mail item)
+    mail_items = [item for item in inbox.Items if item.Class == 43]
+
+
+    # filter to the target email
+    filtered = [item for item in mail_items if item.Unread and item.Senton.date() == today]
+
+    if len(filtered) == 0:
+            print ("No filtered email(s)")
+            return
+    n=0
+    # get the first item if it exists (assuming the there is only one item to get)
+    while n < len(filtered):
+
+        if len(filtered) != 0:
+            target_email = filtered[n]
+            n+=1
+
+            msg = target_email  
+
+        elif len(filtered) != 0:
+            print ("No Email")
 
     factName = re.search('(ICC|APCC)', msg.Body).group(0)
 
@@ -161,6 +188,6 @@ def ICClogic():
     return front_df, back_df
 
 
-getTableEmail(email_dir)
+getTableEmail()
 # ICClogic()
 # APCClogic()

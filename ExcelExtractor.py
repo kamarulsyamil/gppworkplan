@@ -313,7 +313,6 @@ def night_CCC2Df(df):
         shift = ''
 
         shift = 'start'
-        print("Start shift.")
 
         df1 = leftDfclean.drop(columns=['4'])
 
@@ -344,7 +343,7 @@ def night_CCC2Df(df):
         df2 = leftDfclean.drop([0, 1, (leftDfclean.shape[0])-1])
 
     else:
-        print("ASS")
+        print("Try Again")
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 

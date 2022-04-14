@@ -23,7 +23,8 @@ def createWorkbook():
 
     header = ['Factory/Site', '', '', '', 'Date', '', '']
 
-    fName = ['CCC4 (CST)', 'CCC2 (CST)', 'CCC6 (CST)', 'APCC (MYT)', 'ICC (IST)', 'EMFP (CET)', 'BRH1 (BRT)']
+    fName = ['CCC4 (CST)', 'CCC2 (CST)', 'CCC6 (CST)',
+             'APCC (MYT)', 'ICC (IST)', 'EMFP (CET)', 'BRH1 (BRT)']
 
     CCC4List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell K6',
                 'SV Kitting&Cell K7', 'SV Backend', 'Storage line', 'CFS']
@@ -36,7 +37,8 @@ def createWorkbook():
     ICCList = ['Line 1 Frontend', 'Line 2 Frontend', 'Line 3 Frontend',
                'Line 1 Backend', 'Line 2 Backend', 'Line 3 Backend']
 
-    CCC6List = ['Line 1','Line 2','Line 3','Line 4','Line 5','Line 6','Line 7','Line 8','Line 9','Line 10']
+    CCC6List = ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5',
+                'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
 
     subheader = ['Line', 'Start Time', 'End Time',
                  'UPH', 'Start Time', 'End Time', 'UPH']
@@ -588,7 +590,7 @@ def APCCDataInsert(df):
 
     ws['E5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     ws['E5'].alignment = Alignment(horizontal='left')
-    ws['H5'] = strftime("%Z%z", gmtime())
+    ws['H5'] = strftime("%z", gmtime())
 
     wb.save('Consolidated Factory Workplan.xlsx')
 

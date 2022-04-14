@@ -19,6 +19,9 @@ ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Fac
 
 
 def getTableEmail():
+
+    msg = []
+
     # create instance of Outlook
     outlook = client.Dispatch('Outlook.Application')
 
@@ -31,76 +34,68 @@ def getTableEmail():
     # get only mail items from the inbox (other items can exists and will return an error if you try get the subject line of a non-mail item)
     mail_items = [item for item in inbox.Items if item.Class == 43]
 
-
     # filter to the target email
-    filtered = [item for item in mail_items if item.Unread and item.Senton.date() == today]
+    filtered = [
+        item for item in mail_items if item.Unread and item.Senton.date() == today]
 
     if len(filtered) == 0:
-            print ("No filtered email(s)")
-            return
-    n=0
+        print("No filtered email(s)")
+        return
+
+    n = 0
     # get the first item if it exists (assuming the there is only one item to get)
     while n < len(filtered):
 
         if len(filtered) != 0:
             target_email = filtered[n]
-            n+=1
+            n += 1
 
-            msg = target_email  
+            msg.append(target_email)
 
         elif len(filtered) != 0:
-            print ("No Email")
+            print("No Email")
 
-    factName = re.search('(ICC|APCC)', msg.Body).group(0)
+    # factName = re.search('(ICC|APCC)', msg.Body).group(0)
 
-    # dataframe of APCC table from email
-    data = pd.read_html(msg.HTMLBody)
-    # print(msg.Body)
+    # # dataframe of APCC table from email
+    # data = pd.read_html(msg.HTMLBody)
+    # # print(msg.Body)
 
-    #data2 = data1.drop_duplicates(subset='0')
+    # #data2 = data1.drop_duplicates(subset='0')
 
-    if factName == 'APCC':
-        # drop duplicates and NA
-        data1 = data[0].dropna(axis=1, how='all', thresh=3)
+    # if factName == 'APCC':
+    #     # drop duplicates and NA
+    #     data1 = data[0].dropna(axis=1, how='all', thresh=3)
 
-        data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
+    #     data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-        data2 = data1  # .drop_duplicates()
-        # print(data2)
+    #     data2 = data1  # .drop_duplicates()
+    #     # print(data2)
 
-        if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
-            data3 = data2.drop(data2.index[range(5)])
-            # print(data3.reset_index(drop=True))
-            df = data3.reset_index(drop=True)
+    #     if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
+    #         data3 = data2.drop(data2.index[range(5)])
+    #         # print(data3.reset_index(drop=True))
+    #         df = data3.reset_index(drop=True)
 
-    elif factName == 'ICC':
-        # change header of datarframe
-        new_header = data[3].iloc[0]
-        df = data[3][1:]
-        df.columns = new_header
+    # elif factName == 'ICC':
+    #     # change header of datarframe
+    #     new_header = data[3].iloc[0]
+    #     df = data[3][1:]
+    #     df.columns = new_header
 
-        # print(df1)
-
-        # end_time = shift_time[:len(shift_time)//2] [shift_time[i:i+chunk_size] for i in range(0, chunk, chunk_size)]
-        # print([shift_time[i:i+chunk_size]
-        #       for i in range(0, chunk, chunk_size)])
-    # separate tables by date
-
-    # print(date.strftime('%d-%b'))
-
-    return df, factName
+    return msg
 
 # APCC
 
 
-def APCClogic():
+def APCClogic(df, factName):
     # date = date.strftime('%d-%b')
     date = '22-Feb'
 
     first_shift = []
     second_shift = []
 
-    df, factName = getTableEmail(email_dir)
+    #df, factName = getTableEmail(email_dir)
 
     df['group_no'] = df.isnull().all(axis=1).cumsum()
 
@@ -131,13 +126,13 @@ def APCClogic():
     # ICC
 
 
-def ICClogic():
+def ICClogic(df, factName):
 
     df1 = []
 
     df2 = []
 
-    df, factoryname = getTableEmail(ICCemail)
+    #df, factoryname = getTableEmail(ICCemail)
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
 

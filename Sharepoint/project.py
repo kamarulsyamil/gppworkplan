@@ -1,7 +1,7 @@
 from sharepoint import SharePoint
 
 # i.e - file_dir_path = r'C:\project\report.pdf'
-file_dir_path = r'C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\Consolidated Factory Workplan.xlsx'
+file_dir_path = r'Consolidated Factory Workplan2.xlsx'
 
 # this will be the file name that it will be saved in SharePoint as
 file_name = 'Consolidated Factory Workplan.xlsx'

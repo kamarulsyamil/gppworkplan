@@ -1,17 +1,22 @@
 from statistics import mode
 from time import gmtime, strftime
+from numpy import float64
 from sqlalchemy import column
 import xlsxwriter as xlwrite
 from EmailExtractor import ICClogic
 from ExcelExtractor import *
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
+from openpyxl.styles import Border, Side, PatternFill, Font, Alignment, numbers
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.cell.cell import WriteOnlyCell
 from itertools import chain
 import re
 import datetime
+
+import json
+
+date = datetime.date.today()
 
 
 def createWorkbook():
@@ -21,7 +26,7 @@ def createWorkbook():
                     top=Side(style='thin'),
                     bottom=Side(style='thin'))
 
-    header = ['Factory/Site', '', '', '', 'Date', '', '']
+    header = ['Factory/Site', '', '', '', 'Date', '', '', '', '', '']
 
     fName = ['CCC4 (CST)', 'CCC2 (CST)', 'CCC6 (CST)',
              'APCC (MYT)', 'ICC (IST)', 'EMFP (CET)', 'BRH1 (BRT)']
@@ -37,11 +42,14 @@ def createWorkbook():
     ICCList = ['Line 1 Frontend', 'Line 2 Frontend', 'Line 3 Frontend',
                'Line 1 Backend', 'Line 2 Backend', 'Line 3 Backend']
 
+    BRHList = ['Notebook', 'Desktop', 'Server', 'AIO']
+
     CCC6List = ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5',
                 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
 
     subheader = ['Line', 'Start Time', 'End Time',
-                 'UPH', 'Start Time', 'End Time', 'UPH']
+                 'UPH', 'Start Time', 'End Time', 'UPH'
+                 , 'Start Time', 'End Time', 'UPH']
 
     wb = Workbook()
     ws = wb.active
@@ -50,34 +58,38 @@ def createWorkbook():
     ws.title = "Workplans"
 
     # create legend
-    ws['J7'] = 'Legend'
-    ws['J7'].font = Font(bold=True)
-    ws.merge_cells('J7:K7')
-    ws['J7'].border = double
-    ws['K7'].border = double
+    ws['M7'] = 'Legend'
+    ws['M7'].font = Font(bold=True)
+    ws.merge_cells('M7:N7')
+    ws['M7'].border = double
+    ws['N7'].border = double
 
-    ws['J8'] = 'First shift'
-    ws['J9'] = 'Second shift'
-    ws['J8'].border = double
-    ws['J9'].border = double
+    ws['M8'] = 'First shift'
+    ws['M9'] = 'Second shift'
+    ws['M10'] = 'Third shift'
+    ws['M8'].border = double
+    ws['M9'].border = double
+    ws['M10'].border = double
 
-    ws['K8'].fill = PatternFill("solid", fgColor="00FFFFCC")
-    ws['K9'].fill = PatternFill("solid", fgColor="00FFFF00")
-    ws['K8'].border = double
-    ws['K9'].border = double
+    ws['N8'].fill = PatternFill("solid", fgColor="00FFFFCC")
+    ws['N9'].fill = PatternFill("solid", fgColor="00FFFF00")
+    ws['N10'].fill = PatternFill("solid", fgColor="8DB4E2")
+    ws['N8'].border = double
+    ws['N9'].border = double
+    ws['N10'].border = double
 
     # title of sheet
-    ws.merge_cells(start_column=2, start_row=3, end_column=8, end_row=4)
-    ws['B3'] = "Consolidated Factory Workplan"
-    ws['B3'].font = Font(b=True, size=18)
-    ws['B3'].alignment = Alignment(horizontal='center', vertical='center')
+    ws.merge_cells(start_column=3, start_row=3, end_column=9, end_row=4)
+    ws['C3'] = "Consolidated Factory Workplan"
+    ws['C3'].font = Font(b=True, size=18)
+    ws['C3'].alignment = Alignment(horizontal='center', vertical='center')
 
     # updated on info
-    ws.merge_cells(start_column=2, start_row=5, end_column=4, end_row=5)
-    ws['B5'] = "Updated on :"
-    ws['B5'].alignment = Alignment(horizontal='left')
+    ws.merge_cells(start_column=3, start_row=5, end_column=5, end_row=5)
+    ws['C5'] = "Updated on :"
+    ws['C5'].alignment = Alignment(horizontal='left')
 
-    ws.merge_cells(start_column=5, start_row=5, end_column=7, end_row=5)
+    ws.merge_cells(start_column=6, start_row=5, end_column=8, end_row=5)
 
     # subheader and cell color
     for col in ws.iter_cols(min_col=2, min_row=8, max_col=2, max_row=63):
@@ -91,6 +103,10 @@ def createWorkbook():
     for col in ws.iter_cols(min_col=6, min_row=8, max_col=8, max_row=63):
         for cell in col:
             cell.fill = PatternFill("solid", fgColor="00FFFF00")
+
+    for col in ws.iter_cols(min_col=9, min_row=8, max_col=11, max_row=63):
+        for cell in col:
+            cell.fill = PatternFill("solid", fgColor="8DB4E2")
 
     # add factory lines
         # CCC4 and CCC2
@@ -133,15 +149,23 @@ def createWorkbook():
             cell.value = ICCList[i]
             i += 1
 
+        #BRH
+    for col in ws.iter_cols(min_col=2, min_row=58, max_col=2, max_row=57 + len(BRHList)):
+        i = 0
+        for cell in col:
+            cell.value = BRHList[i]
+            i += 1
+
+
     # create tables
     rows = 7
     findex = 0
 
-    for row in ws.iter_rows(min_row=7, min_col=2, max_row=63, max_col=8):
+    for row in ws.iter_rows(min_row=7, min_col=2, max_row=63, max_col=11):
         for cell in row:
             cell.border = double
 
-        if rows == 7 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 49 or rows == 57:
+        if rows == 7 or rows == 16 or rows == 24 or rows == 32 or rows == 40 or rows == 48 or rows == 56:
             i = 0
 
             for cell in row:
@@ -155,7 +179,7 @@ def createWorkbook():
             ws.cell(row=rows, column=4, value=fName[findex])
             findex += 1
 
-        elif rows == 8 or rows == 17 or rows == 25 or rows == 33 or rows == 41 or rows == 50 or rows == 58:
+        elif rows == 8 or rows == 17 or rows == 25 or rows == 33 or rows == 41 or rows == 49 or rows == 57:
             i = 0
             for cell in row:
                 cell.value = subheader[i]
@@ -169,13 +193,15 @@ def createWorkbook():
     max_row = 63
 
     for x in range(max_row):
-        if header == 7 or header == 16 or header == 24 or header == 32 or header == 40 or header == 49 or header == 57:
+        if header == 7 or header == 16 or header == 24 or header == 32 or header == 40 or header == 48 or header == 56:
             ws.merge_cells(start_row=header, start_column=2,
                            end_row=header, end_column=3)
             ws.merge_cells(start_row=header, start_column=4,
                            end_row=header, end_column=5)
             ws.merge_cells(start_row=header, start_column=6,
-                           end_row=header, end_column=7)
+                           end_row=header, end_column=9)
+            ws.merge_cells(start_row=header, start_column=10,
+                           end_row=header, end_column=11)
 
         header += 1
 
@@ -194,7 +220,7 @@ def CCC4DataInsert(factDf):
 
         if isNight:
             # gather data
-            ws['H7'] = fdate
+            ws['J7'] = fdate
             K6_df = df[df['Line'].str.contains("Kitting&Cell K6")]
             K6_start = K6_df.loc[K6_df.first_valid_index(), 'Start Time']
 
@@ -224,7 +250,7 @@ def CCC4DataInsert(factDf):
 
         else:
             # else is day
-            ws['H7'] = fdate
+            ws['J7'] = fdate
 
             DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
             DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
@@ -308,7 +334,7 @@ def CCC4DataInsert(factDf):
         # else is day
         else:
             # else is day
-            ws['H7'] = fdate
+            ws['J7'] = fdate
 
             DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
             DTFront_end = DTFront_df.loc[DTFront_df.first_valid_index(
@@ -366,7 +392,7 @@ def CCC2DataInsert(factDf):
 
         if isNight:
             # gather data
-            ws['H16'] = fdate
+            ws['J16'] = fdate
             DTFront_df = df[df['Line'].str.contains("DT Kitting&Cell")]
             DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
             ), 'Start Time']
@@ -408,7 +434,7 @@ def CCC2DataInsert(factDf):
 
         else:
             # else is day
-            ws['H16'] = fdate
+            ws['J16'] = fdate
 
             DTFront_df = df[df['Line'].str.contains("DT Kitting")]
             DTFront_start = DTFront_df.loc[DTFront_df.first_valid_index(
@@ -509,7 +535,7 @@ def CCC2DataInsert(factDf):
 
         # else is day
         else:
-            ws['H16'] = fdate
+            ws['J16'] = fdate
 
             DTFront_df = df[df['Line'].str.contains("DT Kitting")]
             DTFront_end = DTFront_df.loc[DTFront_df.first_valid_index(
@@ -565,7 +591,7 @@ def APCCDataInsert(df):
     wb = load_workbook('Consolidated Factory Workplan.xlsx')
     ws = wb.active
 
-    ws['H32'] = date
+    ws['J32'] = date
 
     for i in first_shift:
         first_result.append(i.split(' - '))
@@ -588,9 +614,9 @@ def APCCDataInsert(df):
             cell.value = list(second_shift_list)[i]
             i += 1
 
-    ws['E5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    ws['E5'].alignment = Alignment(horizontal='left')
-    ws['H5'] = strftime("%z", gmtime())
+    ws['F5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    ws['F5'].alignment = Alignment(horizontal='left')
+    ws['I5'] = strftime("%z", gmtime())
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
@@ -699,11 +725,106 @@ def ICCDataInsert(df):
                 cell.value = list(back_first_list)[i]
                 i += 1
 
+        ws['J40'] = date.strftime('%d-%b')
+
     wb.save('Consolidated Factory Workplan.xlsx')
 
-#print(strftime("%Z%z", gmtime()))
-# # ICCDataInsert(ICClogic())
-# now = datetime.datetime.today()
-# current_time = now.strftime("%H:%M:%S")
-# print("Current Time =", current_time)
-# print("Your Time Zone is GMT", strftime("%z", gmtime()))
+def CCC6DataInsert():
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    #insert from config file
+    #CCC6
+    
+    config_path = r"sources\factory_config.json"           
+    # read config file
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+        config = config['CCC6']
+
+    LINE = config['line']
+    DATE = config['date']
+
+    START_SHIFT1 = config['start_time1']
+    END_SHIFT1 = config['end_time1']
+    UPH1 = config['UPH1']
+
+    START_SHIFT2 = config['start_time2']
+    END_SHIFT2 = config['end_time2']
+    UPH2 = config['UPH2']
+
+    START_SHIFT3 = config['start_time3']
+    END_SHIFT3 = config['end_time3']
+    UPH3 = config['UPH3']   
+
+    ws['B26'] = LINE
+    ws['C26'] = START_SHIFT1
+    ws['D26'] = END_SHIFT1
+    ws['E26'] = UPH1
+    ws['F26'] = START_SHIFT2
+    ws['G26'] = END_SHIFT2
+    ws['H26'] = UPH2
+    ws['I26'] = START_SHIFT3
+    ws['J26'] = END_SHIFT3
+    ws['K26'] = UPH3
+
+    if DATE == "":
+        ws['J24'] = date.strftime('%d-%b')
+    else:
+        ws['J24'] = DATE
+
+    #print(LINE, START_SHIFT1)
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+def BRH1DataInsert(df):
+    print("Inserting data for BRH")
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    first_hrs, second_hrs, first_UPH, second_UPH = df
+
+    config_path = r"sources\factory_config.json"           
+    # read config file
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+        config = config['BRH1']
+    
+    for col in ws.iter_cols(min_col=3, min_row=58, max_col=3, max_row=61):
+        for cell in col:
+            cell.value = config['first_shift']
+            cell.number_format = numbers.FORMAT_DATE_TIMEDELTA
+
+    celindex = 58
+    for i in first_hrs:
+        ws['D%d'%celindex].value = ('=C58 + TIME(%f,0,0)' %i)
+        ws['D%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
+        
+        #start second shift
+        ws['F%d'%celindex].value = ws['D%d'%celindex].value
+        ws['F%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
+        celindex += 1
+
+    celindex = 58
+    for i in second_hrs:
+        ws['G%d'%celindex].value = ('=F%d + TIME(%f,0,0)' %(celindex,i))
+        ws['G%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
+        
+        celindex += 1
+    #UPH insertion
+    celindex = 58
+    for i in first_UPH:
+        ws['E%d'%celindex] = i
+        celindex += 1
+
+    celindex = 58
+    for i in second_UPH:
+        ws['H%d'%celindex] = i
+        celindex += 1
+
+    ws['J56'] = date.strftime('%d-%b')
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
+#CCC6DataInsert()

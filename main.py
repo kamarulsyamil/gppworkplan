@@ -1,5 +1,5 @@
 from webbrowser import get
-from EmailExtractor import APCClogic, ICClogic, getTableEmail
+from EmailExtractor import APCClogic, BRHlogic, ICClogic, getTableEmail
 import ExcelCreator
 import ExcelExtractor
 import os.path
@@ -94,6 +94,12 @@ def main():
 
     except:
         print("Theres a problem while inserting CCC2 data")
+    
+    #CCC6 data insertion
+    try:
+        ExcelCreator.CCC6DataInsert()
+    except:
+        print("Error while reading config file")
 
     # FROM EMAIL
     # ---------------------------------------------------
@@ -103,7 +109,7 @@ def main():
 
         for i in getTableEmail():
 
-            factName = re.search('(ICC|APCC)', i.Body).group(0)
+            factName = re.search('(ICC|APCC|BRH)', i.Body).group(0)
 
             # dataframe of APCC table from email
             data = pd.read_html(i.HTMLBody)
@@ -136,6 +142,20 @@ def main():
 
                 # insert data for ICC
                 ExcelCreator.ICCDataInsert(ICClogic(df, factName))
+
+            elif factName == 'BRH':
+                new_header = data[0].iloc[0]
+                df = data[0][1:]
+                df.columns = new_header
+
+                df1 = df.drop(['LINE','CAP','Config'], axis = 1)
+
+                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']                
+                df1.columns = new_header
+
+                df1 = df1.fillna(0)
+                
+                ExcelCreator.BRH1DataInsert(BRHlogic(df1, factName))
 
         print("Done!")
 

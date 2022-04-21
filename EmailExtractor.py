@@ -1,6 +1,6 @@
 from cmath import nan
 import os
-from numpy import NaN
+from numpy import AxisError, NaN
 import pandas as pd
 from scipy.fftpack import shift
 import win32com.client as client
@@ -123,6 +123,43 @@ def APCClogic(df, factName):
 
     # BRH dont have shift times so maybe just put the hours?
 
+def BRHlogic(df, factName):
+    
+    notebook_df = df.loc[df['LOB'] == 'NOTEBOOK']
+    desktop_df = df.loc[df['LOB'] == 'DESKTOP']
+    server_df = df.loc[df['LOB'] == 'Server']
+    aio_df = df.loc[df['LOB'] == 'AIO']
+
+    nb_hrs1 = pd.to_numeric(notebook_df['HRS1']).max()
+    nb_hrs2 = pd.to_numeric(notebook_df['HRS2']).max()
+    nb_UPH1 = pd.to_numeric(notebook_df['UPH1']).sum()
+    nb_UPH2 = pd.to_numeric(notebook_df['UPH2']).sum()
+
+    dt_hrs1 = pd.to_numeric(desktop_df['HRS1']).max()
+    dt_hrs2 = pd.to_numeric(desktop_df['HRS2']).max()
+    dt_UPH1 = pd.to_numeric(desktop_df['UPH1']).sum()
+    dt_UPH2 = pd.to_numeric(desktop_df['UPH2']).sum()
+
+    server_hrs1 = pd.to_numeric(server_df['HRS1']).max()
+    server_hrs2 = pd.to_numeric(server_df['HRS2']).max()
+    server_UPH1 = pd.to_numeric(server_df['UPH1']).sum()
+    server_UPH2 = pd.to_numeric(server_df['UPH2']).sum()
+
+    aio_hrs1 = pd.to_numeric(aio_df['HRS1']).max()
+    aio_hrs2 = pd.to_numeric(aio_df['HRS2']).max()
+    aio_UPH1 = pd.to_numeric(aio_df['UPH1']).sum()
+    aio_UPH2 = pd.to_numeric(aio_df['UPH2']).sum()
+
+    first_hrs = [nb_hrs1,dt_hrs1,server_hrs1,aio_hrs1]
+    second_hrs = [nb_hrs2,dt_hrs2,server_hrs2,aio_hrs2]
+
+    first_UPH = [nb_UPH1, dt_UPH1, server_UPH1, aio_UPH1]
+    second_UPH = [nb_UPH2, dt_UPH2, server_UPH2, aio_UPH2]
+
+
+    return first_hrs, second_hrs, first_UPH, second_UPH
+
+
     # ICC
 
 
@@ -183,6 +220,6 @@ def ICClogic(df, factName):
     return front_df, back_df
 
 
-getTableEmail()
-# ICClogic()
+#getTableEmail()
+#BRHlogic()
 # APCClogic()

@@ -1,9 +1,8 @@
 from statistics import mode
 from time import gmtime, strftime
 from numpy import float64
-from sqlalchemy import column
 import xlsxwriter as xlwrite
-from EmailExtractor import ICClogic
+from EmailExtractor import EMFPlogic, ICClogic
 from ExcelExtractor import *
 import pandas as pd
 from openpyxl import Workbook, load_workbook
@@ -48,8 +47,7 @@ def createWorkbook():
                 'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
 
     subheader = ['Line', 'Start Time', 'End Time',
-                 'UPH', 'Start Time', 'End Time', 'UPH'
-                 , 'Start Time', 'End Time', 'UPH']
+                 'UPH', 'Start Time', 'End Time', 'UPH', 'Start Time', 'End Time', 'UPH']
 
     wb = Workbook()
     ws = wb.active
@@ -149,13 +147,12 @@ def createWorkbook():
             cell.value = ICCList[i]
             i += 1
 
-        #BRH
+        # BRH
     for col in ws.iter_cols(min_col=2, min_row=58, max_col=2, max_row=57 + len(BRHList)):
         i = 0
         for cell in col:
             cell.value = BRHList[i]
             i += 1
-
 
     # create tables
     rows = 7
@@ -729,14 +726,15 @@ def ICCDataInsert(df):
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
+
 def CCC6DataInsert():
     wb = load_workbook('Consolidated Factory Workplan.xlsx')
     ws = wb.active
 
-    #insert from config file
-    #CCC6
-    
-    config_path = r"sources\factory_config.json"           
+    # insert from config file
+    # CCC6
+
+    config_path = r"sources\factory_config.json"
     # read config file
     with open(config_path) as config_file:
         config = json.load(config_file)
@@ -755,7 +753,7 @@ def CCC6DataInsert():
 
     START_SHIFT3 = config['start_time3']
     END_SHIFT3 = config['end_time3']
-    UPH3 = config['UPH3']   
+    UPH3 = config['UPH3']
 
     ws['B26'] = LINE
     ws['C26'] = START_SHIFT1
@@ -777,6 +775,7 @@ def CCC6DataInsert():
 
     wb.save('Consolidated Factory Workplan.xlsx')
 
+
 def BRH1DataInsert(df):
     print("Inserting data for BRH")
     wb = load_workbook('Consolidated Factory Workplan.xlsx')
@@ -784,12 +783,12 @@ def BRH1DataInsert(df):
 
     first_hrs, second_hrs, first_UPH, second_UPH = df
 
-    config_path = r"sources\factory_config.json"           
+    config_path = r"sources\factory_config.json"
     # read config file
     with open(config_path) as config_file:
         config = json.load(config_file)
         config = config['BRH1']
-    
+
     for col in ws.iter_cols(min_col=3, min_row=58, max_col=3, max_row=61):
         for cell in col:
             cell.value = config['first_shift']
@@ -797,29 +796,29 @@ def BRH1DataInsert(df):
 
     celindex = 58
     for i in first_hrs:
-        ws['D%d'%celindex].value = ('=C58 + TIME(%f,0,0)' %i)
-        ws['D%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
-        
-        #start second shift
-        ws['F%d'%celindex].value = ws['D%d'%celindex].value
-        ws['F%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
+        ws['D%d' % celindex].value = ('=C58 + TIME(%f,0,0)' % i)
+        ws['D%d' % celindex].number_format = numbers.FORMAT_DATE_TIME6
+
+        # start second shift
+        ws['F%d' % celindex].value = ws['D%d' % celindex].value
+        ws['F%d' % celindex].number_format = numbers.FORMAT_DATE_TIME6
         celindex += 1
 
     celindex = 58
     for i in second_hrs:
-        ws['G%d'%celindex].value = ('=F%d + TIME(%f,0,0)' %(celindex,i))
-        ws['G%d'%celindex].number_format = numbers.FORMAT_DATE_TIME6
-        
+        ws['G%d' % celindex].value = ('=F%d + TIME(%f,0,0)' % (celindex, i))
+        ws['G%d' % celindex].number_format = numbers.FORMAT_DATE_TIME6
+
         celindex += 1
-    #UPH insertion
+    # UPH insertion
     celindex = 58
     for i in first_UPH:
-        ws['E%d'%celindex] = i
+        ws['E%d' % celindex] = i
         celindex += 1
 
     celindex = 58
     for i in second_UPH:
-        ws['H%d'%celindex] = i
+        ws['H%d' % celindex] = i
         celindex += 1
 
     ws['J56'] = date.strftime('%d-%b')
@@ -827,4 +826,35 @@ def BRH1DataInsert(df):
     wb.save('Consolidated Factory Workplan.xlsx')
 
 
-#CCC6DataInsert()
+def EMFPDataInsert(df):
+    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    ws = wb.active
+
+    #df = EMFPlogic()
+
+    # print(df)
+    #print('6:00' in df.to_string())
+
+    if '6:00' in df.to_string():
+        ws['C50'] = '6:00'
+        ws['D50'] = '14:00'
+        ws['C50'].number_format = numbers.FORMAT_DATE_TIME6
+        ws['D50'].number_format = numbers.FORMAT_DATE_TIME6
+    else:
+        ws['C50'] = 'N/A'
+        ws['D50'] = 'N/A'
+
+    if '14:00' in df.to_string():
+        ws['F50'] = '14:00'
+        ws['G50'] = '22:00'
+        ws['F50'].number_format = numbers.FORMAT_DATE_TIME6
+        ws['G50'].number_format = numbers.FORMAT_DATE_TIME6
+    else:
+        ws['F50'] = 'N/A'
+        ws['G50'] = 'N/A'
+
+    wb.save('Consolidated Factory Workplan.xlsx')
+
+
+# EMFPDataInsert()
+# CCC6DataInsert()

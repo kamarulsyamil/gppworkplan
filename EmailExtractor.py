@@ -1,12 +1,14 @@
 from cmath import nan
 import os
-from numpy import AxisError, NaN
+from matplotlib.pyplot import axis
+import numpy as np
+from numpy import AxisError, NaN, expand_dims
 import pandas as pd
 from scipy.fftpack import shift
+#from sqlalchemy import true
 import win32com.client as client
 import datetime
-import textwrap
-import re
+import tabula
 
 today = datetime.date.today()
 
@@ -55,34 +57,6 @@ def getTableEmail():
         elif len(filtered) != 0:
             print("No Email")
 
-    # factName = re.search('(ICC|APCC)', msg.Body).group(0)
-
-    # # dataframe of APCC table from email
-    # data = pd.read_html(msg.HTMLBody)
-    # # print(msg.Body)
-
-    # #data2 = data1.drop_duplicates(subset='0')
-
-    # if factName == 'APCC':
-    #     # drop duplicates and NA
-    #     data1 = data[0].dropna(axis=1, how='all', thresh=3)
-
-    #     data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
-
-    #     data2 = data1  # .drop_duplicates()
-    #     # print(data2)
-
-    #     if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
-    #         data3 = data2.drop(data2.index[range(5)])
-    #         # print(data3.reset_index(drop=True))
-    #         df = data3.reset_index(drop=True)
-
-    # elif factName == 'ICC':
-    #     # change header of datarframe
-    #     new_header = data[3].iloc[0]
-    #     df = data[3][1:]
-    #     df.columns = new_header
-
     return msg
 
 # APCC
@@ -123,8 +97,9 @@ def APCClogic(df, factName):
 
     # BRH dont have shift times so maybe just put the hours?
 
+
 def BRHlogic(df, factName):
-    
+
     notebook_df = df.loc[df['LOB'] == 'NOTEBOOK']
     desktop_df = df.loc[df['LOB'] == 'DESKTOP']
     server_df = df.loc[df['LOB'] == 'Server']
@@ -150,15 +125,13 @@ def BRHlogic(df, factName):
     aio_UPH1 = pd.to_numeric(aio_df['UPH1']).sum()
     aio_UPH2 = pd.to_numeric(aio_df['UPH2']).sum()
 
-    first_hrs = [nb_hrs1,dt_hrs1,server_hrs1,aio_hrs1]
-    second_hrs = [nb_hrs2,dt_hrs2,server_hrs2,aio_hrs2]
+    first_hrs = [nb_hrs1, dt_hrs1, server_hrs1, aio_hrs1]
+    second_hrs = [nb_hrs2, dt_hrs2, server_hrs2, aio_hrs2]
 
     first_UPH = [nb_UPH1, dt_UPH1, server_UPH1, aio_UPH1]
     second_UPH = [nb_UPH2, dt_UPH2, server_UPH2, aio_UPH2]
 
-
     return first_hrs, second_hrs, first_UPH, second_UPH
-
 
     # ICC
 
@@ -220,6 +193,34 @@ def ICClogic(df, factName):
     return front_df, back_df
 
 
-#getTableEmail()
-#BRHlogic()
-# APCClogic()
+def EMFPlogic():
+    #print("EMFP Logic")
+    df = tabula.read_pdf(
+        'sources\Grafik Marzec -Maj 22 .pdf', stream=True, pages='all')
+
+    for i in df:
+
+        # print(i)
+
+        if today.strftime('%B') in i.values:
+            #print("Month :", today.strftime('%B'))
+
+            df1 = i.dropna(how='all', thresh=4, axis=1)
+            df2 = df1.dropna(how='all', thresh=5)
+            df3 = df2.reset_index(drop=True)
+            df4 = df3.iloc[-2:, :]
+
+            df5 = pd.DataFrame()
+            templist = []
+            for col in df4:
+                templist.append(df4[col].str.split(expand=True))
+
+            df5 = pd.concat(templist, axis=1)
+            df5.columns = np.arange(len(df5.columns))
+
+            return df5[today.day]
+
+
+# getTableEmail()
+# BRHlogic()
+# EMFPlogic()

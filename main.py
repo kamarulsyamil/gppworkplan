@@ -1,5 +1,5 @@
 from webbrowser import get
-from EmailExtractor import APCClogic, BRHlogic, ICClogic, getTableEmail
+from EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
 import ExcelCreator
 import ExcelExtractor
 import os.path
@@ -9,7 +9,7 @@ import pandas as pd
 
 def main():
     #f = "C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\Production Line Arrangement of 2022.xlsx"
-    f = r"sources\Production Line Arrangement of 2022.xlsx"
+    f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
 
     # create workbook named Consolidated Factory Workplan
     if not os.path.exists(r"Consolidated Factory Workplan.xlsx"):
@@ -20,25 +20,23 @@ def main():
 
     # gather dataframes
 
-    try:
-        print("Gathering data...")
+    print("Gathering data...")
 
-        CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
-        CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
+    CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
+    CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
 
-        CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
-        CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
+    CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
+    CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
 
-        CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
-        CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
+    CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
+    CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
 
-        CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
-        CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
+    CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
+    CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
 
-        print("Succesfully gathered data")
+    print("Succesfully gathered data")
 
-    except:
-        print("Theres a problem while gathering dataframes")
+    # print("Theres a problem while gathering dataframes")
 
     # process dataframes
 
@@ -94,8 +92,8 @@ def main():
 
     except:
         print("Theres a problem while inserting CCC2 data")
-    
-    #CCC6 data insertion
+
+    # CCC6 data insertion
     try:
         ExcelCreator.CCC6DataInsert()
     except:
@@ -148,13 +146,13 @@ def main():
                 df = data[0][1:]
                 df.columns = new_header
 
-                df1 = df.drop(['LINE','CAP','Config'], axis = 1)
+                df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
 
-                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']                
+                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
                 df1.columns = new_header
 
                 df1 = df1.fillna(0)
-                
+
                 ExcelCreator.BRH1DataInsert(BRHlogic(df1, factName))
 
         print("Done!")
@@ -165,6 +163,12 @@ def main():
 
     except:
         print("Error while processing data from e-mail")
+
+    # EMFP insertion
+    try:
+        ExcelCreator.EMFPDataInsert(EMFPlogic())
+    except:
+        print("failed to insert EMFP data")
 
 
 if __name__ == "__main__":

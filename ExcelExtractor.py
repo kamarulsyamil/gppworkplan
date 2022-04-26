@@ -12,7 +12,7 @@ import glob
 
 fact_data = pd.DataFrame()
 
-f = "C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\Production Line Arrangement of 2022.xlsx"
+f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
 
 # process excel shifts of CCC4
 
@@ -347,6 +347,8 @@ def night_CCC2Df(df):
 
     return df2.reset_index(drop=True), fName, date, shift, isNight
 
+
+# day_CCC4(f)
 # removed duplicate
 # df6 = CCC4Df()['Line'].drop_duplicates()
 # df7 = df6.dropna(how='all')

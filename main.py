@@ -5,14 +5,28 @@ import ExcelExtractor
 import os.path
 import re
 import pandas as pd
+import os
+import win32com.client as win32
+import json
 
 
 def main():
+
+    config_path = r"tool_config.json"
+
+    # read config file
+    with open(config_path) as config_file:
+        config = json.load(config_file)
+        file_dir = config['file_dir']
+        sharepoint = config["sharepoint"]
+
     #f = "C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\Production Line Arrangement of 2022.xlsx"
-    f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
+    #f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
+
+    f = file_dir['CCC2/4']
 
     # create workbook named Consolidated Factory Workplan
-    if not os.path.exists(r"Consolidated Factory Workplan.xlsx"):
+    if not os.path.exists(file_dir['main_excel']):
         print("Creating workbook...")
         ExcelCreator.createWorkbook()
 
@@ -20,23 +34,26 @@ def main():
 
     # gather dataframes
 
-    print("Gathering data...")
+    try:
 
-    CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
-    CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
+        print("Gathering data...")
 
-    CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
-    CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
+        CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
+        CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
 
-    CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
-    CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
+        CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
+        CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
 
-    CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
-    CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
+        CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
+        CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
 
-    print("Succesfully gathered data")
+        CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
+        CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
 
-    # print("Theres a problem while gathering dataframes")
+        print("Succesfully gathered data")
+
+    except:
+        print("Theres a problem while gathering dataframes")
 
     # process dataframes
 
@@ -62,10 +79,12 @@ def main():
     try:
         print("inserting data for CCC4...")
 
-        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean)
-        ExcelCreator.CCC4DataInsert(CCC4_night_df_clean)
-        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean2)
-        ExcelCreator.CCC4DataInsert(CCC4_night_df_clean2)
+        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean, file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(
+            CCC4_night_df_clean, file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean2, file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(
+            CCC4_night_df_clean2, file_dir['main_excel'])
 
         print("Succesfully inserted CCC4 data")
     except PermissionError as e:
@@ -79,10 +98,12 @@ def main():
     try:
         print("inserting data for CCC2...")
 
-        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean)
-        ExcelCreator.CCC2DataInsert(CCC2_night_df_clean)
-        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean2)
-        ExcelCreator.CCC2DataInsert(CCC2_night_df_clean2)
+        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean, file_dir['main_excel'])
+        ExcelCreator.CCC2DataInsert(
+            CCC2_night_df_clean, file_dir['main_excel'])
+        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean2, file_dir['main_excel'])
+        ExcelCreator.CCC2DataInsert(
+            CCC2_night_df_clean2, file_dir['main_excel'])
 
         print("Succesfully inserted CCC2 data")
 
@@ -95,7 +116,7 @@ def main():
 
     # CCC6 data insertion
     try:
-        ExcelCreator.CCC6DataInsert()
+        ExcelCreator.CCC6DataInsert(file_dir['main_excel'])
     except:
         print("Error while reading config file")
 
@@ -130,7 +151,8 @@ def main():
                     df = data3.reset_index(drop=True)
 
                     # insert data for APCC
-                    ExcelCreator.APCCDataInsert(APCClogic(df, factName))
+                    ExcelCreator.APCCDataInsert(
+                        APCClogic(df, factName), file_dir['main_excel'])
 
             elif factName == 'ICC':
                 # change header of datarframe
@@ -139,7 +161,8 @@ def main():
                 df.columns = new_header
 
                 # insert data for ICC
-                ExcelCreator.ICCDataInsert(ICClogic(df, factName))
+                ExcelCreator.ICCDataInsert(
+                    ICClogic(df, factName), file_dir['main_excel'])
 
             elif factName == 'BRH':
                 new_header = data[0].iloc[0]
@@ -153,7 +176,8 @@ def main():
 
                 df1 = df1.fillna(0)
 
-                ExcelCreator.BRH1DataInsert(BRHlogic(df1, factName))
+                ExcelCreator.BRH1DataInsert(
+                    BRHlogic(df1, factName), file_dir['main_excel'])
 
         print("Done!")
 
@@ -166,9 +190,40 @@ def main():
 
     # EMFP insertion
     try:
-        ExcelCreator.EMFPDataInsert(EMFPlogic())
+        print("Inserting data for EMFP...")
+        ExcelCreator.EMFPDataInsert(
+            EMFPlogic(file_dir["EMFP"]), file_dir['main_excel'])
     except:
         print("failed to insert EMFP data")
+
+    # Send email to sharepoint
+
+    # construct Outlook application instance
+    olApp = win32.Dispatch('Outlook.Application')
+    olNS = olApp.GetNameSpace('MAPI')
+
+    # construct the email item object
+    mailItem = olApp.CreateItem(0)
+    mailItem.Subject = 'Test '  # can be any subject
+    mailItem.BodyFormat = 1
+    mailItem.Body = "Attachment of Consolidate View"  # can be any body
+    mailItem.To = sharepoint["email"]
+
+    # mailItem._oleobj_.Invoke(*(64209, 0, 8, 0, olNS.Accounts.Item('<email@gmail.com'))) [NOTHING JUST IGNORE FOR NOW! DONT DELETE ]
+
+    mailItem.Attachments.Add(os.path.join(
+        os.getcwd(), file_dir['main_excel']))
+    # mailItem.Attachments.Add(os.path.join(os.getcwd(), r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Test2.csv')) <*sample*>
+
+    try:
+        print("Sending excel file to sharepoint...")
+        # mailItem.Display()
+        mailItem.Send()
+
+        print("Successfully sent excel file to sharepoint")
+
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

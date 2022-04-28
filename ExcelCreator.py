@@ -203,11 +203,11 @@ def createWorkbook():
         header += 1
 
     # save xl to explorer
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def CCC4DataInsert(factDf):
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+def CCC4DataInsert(factDf, excel_dir):
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     df, fname, fdate, fshift, isNight = factDf
@@ -375,11 +375,11 @@ def CCC4DataInsert(factDf):
 
                     i += 1
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def CCC2DataInsert(factDf):
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+def CCC2DataInsert(factDf, excel_dir):
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     df, fname, fdate, fshift, isNight = factDf
@@ -577,15 +577,15 @@ def CCC2DataInsert(factDf):
 
                     i += 1
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def APCCDataInsert(df):
+def APCCDataInsert(df, excel_dir):
     first_result = []
     second_result = []
     first_shift, second_shift, date = df
 
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     ws['J32'] = date
@@ -615,10 +615,10 @@ def APCCDataInsert(df):
     ws['F5'].alignment = Alignment(horizontal='left')
     ws['I5'] = strftime("%z", gmtime())
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def ICCDataInsert(df):
+def ICCDataInsert(df, excel_dir):
     # frontend and backend
     front_df, back_df = df
 
@@ -627,7 +627,7 @@ def ICCDataInsert(df):
     back_first_shift = []
     back_second_shift = []
 
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     # if df has two columns put the second column in the second shift col in the excel
@@ -724,11 +724,11 @@ def ICCDataInsert(df):
 
         ws['J40'] = date.strftime('%d-%b')
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def CCC6DataInsert():
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+def CCC6DataInsert(excel_dir):
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     # insert from config file
@@ -773,12 +773,12 @@ def CCC6DataInsert():
 
     #print(LINE, START_SHIFT1)
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def BRH1DataInsert(df):
+def BRH1DataInsert(df, excel_dir):
     print("Inserting data for BRH")
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     first_hrs, second_hrs, first_UPH, second_UPH = df
@@ -823,17 +823,23 @@ def BRH1DataInsert(df):
 
     ws['J56'] = date.strftime('%d-%b')
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
-def EMFPDataInsert(df):
-    wb = load_workbook('Consolidated Factory Workplan.xlsx')
+def EMFPDataInsert(df, excel_dir):
+    wb = load_workbook(excel_dir)
     ws = wb.active
 
     #df = EMFPlogic()
 
     # print(df)
     #print('6:00' in df.to_string())
+
+    # line name
+    ws['B50'] = 'EMFP'
+
+    # date
+    ws["J48"] = date.strftime('%d-%b')
 
     if '6:00' in df.to_string():
         ws['C50'] = '6:00'
@@ -853,7 +859,7 @@ def EMFPDataInsert(df):
         ws['F50'] = 'N/A'
         ws['G50'] = 'N/A'
 
-    wb.save('Consolidated Factory Workplan.xlsx')
+    wb.save(excel_dir)
 
 
 # EMFPDataInsert()

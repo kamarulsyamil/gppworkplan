@@ -12,8 +12,8 @@ import tabula
 
 today = datetime.date.today()
 
-email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\APCC Work Plan.msg"
-ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
+#email_dir = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\APCC Work Plan.msg"
+#ICCemail = r"C:\Users\Yusuf_Budiawan\Documents\Factory-Work-Plan-Consolidate\Factory-Work-Plan-Consolidate\sources\ICC Shift timings_.msg"
 #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\ICC Shift timings_.msg"
 #email_dir = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\APCC Work Plan.msg"
 
@@ -193,10 +193,10 @@ def ICClogic(df, factName):
     return front_df, back_df
 
 
-def EMFPlogic():
+def EMFPlogic(f):
     #print("EMFP Logic")
     df = tabula.read_pdf(
-        'sources\Grafik Marzec -Maj 22 .pdf', stream=True, pages='all')
+        f, stream=True, pages='all')
 
     for i in df:
 

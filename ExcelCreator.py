@@ -18,7 +18,7 @@ import json
 date = datetime.date.today()
 
 
-def createWorkbook():
+def createWorkbook(excel_dir):
 
     double = Border(left=Side(style='thin'),
                     right=Side(style='thin'),

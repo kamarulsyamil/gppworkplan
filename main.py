@@ -1,5 +1,6 @@
 from webbrowser import get
 from EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
+from ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
 import ExcelCreator
 import ExcelExtractor
 import os.path
@@ -23,7 +24,8 @@ def main():
     #f = "C:\\Users\\Yusuf\\Documents\\My Project\\Factory Work Plan\\Production Line Arrangement of 2022.xlsx"
     #f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
 
-    f = r'sources\Production Line Arrangement of 2022.xlsx'#r'\\w1039fnf93.dhcp.apac.dell.com\PlannerDoc\SHIFT ARRANGEMENT\Production Line Arrangement of 2022.xlsx' #file_dir['CCC2/4'] 
+    # r'\\w1039fnf93.dhcp.apac.dell.com\PlannerDoc\SHIFT ARRANGEMENT\Production Line Arrangement of 2022.xlsx' #file_dir['CCC2/4']
+    f = r'sources\Production Line Arrangement of 2022.xlsx'
 
     # create workbook named Consolidated Factory Workplan
     if not os.path.exists(file_dir['main_excel']):
@@ -34,83 +36,88 @@ def main():
 
     # gather dataframes
 
-    try:
+    # try:
 
-        print("Gathering data...")
+    #     print("Gathering data...")
 
-        CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
-        CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
-        return
-        CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
-        CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
+    #     CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
+    #     CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
+    #     CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
+    #     CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
 
-        CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
-        CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
+    #     CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
+    #     CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
 
-        CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
-        CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
+    #     CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
+    #     CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
 
-        print("Succesfully gathered data")
-        
+    #     print("Succesfully gathered data")
 
-    except Exception as e:
-        print("Theres a problem while gathering dataframes")
-        print("Error: " , str(e))
+    # except Exception as e:
+    #     print("Theres a problem while gathering dataframes")
+    #     print("Error: " , str(e))
 
-        
-    # process dataframes
+    # # process dataframes
 
-    #try:
-    print("Processing data...")
+    # try:
+    #     print("Processing data...")
 
-    CCC4_day_df_clean = ExcelExtractor.day_CCC4Df(CCC4_day_df)
-    CCC4_night_df_clean = ExcelExtractor.night_CCC4Df(CCC4_night_df)
-    return
-    CCC4_day_df_clean2 = ExcelExtractor.day_CCC4Df(CCC4_day_df2)
-    CCC4_night_df_clean2 = ExcelExtractor.night_CCC4Df(CCC4_night_df2)
+    #     CCC4_day_df_clean = ExcelExtractor.day_CCC4Df(CCC4_day_df)
+    #     CCC4_night_df_clean = ExcelExtractor.night_CCC4Df(CCC4_night_df)
+    #     CCC4_day_df_clean2 = ExcelExtractor.day_CCC4Df(CCC4_day_df2)
+    #     CCC4_night_df_clean2 = ExcelExtractor.night_CCC4Df(CCC4_night_df2)
 
-    CCC2_day_df_clean = ExcelExtractor.day_CCC2Df(CCC2_day_df)
-    CCC2_night_df_clean = ExcelExtractor.night_CCC2Df(CCC2_night_df)
-    CCC2_day_df_clean2 = ExcelExtractor.day_CCC2Df(CCC2_day_df2)
-    CCC2_night_df_clean2 = ExcelExtractor.night_CCC2Df(CCC2_night_df2)
+    #     CCC2_day_df_clean = ExcelExtractor.day_CCC2Df(CCC2_day_df)
+    #     CCC2_night_df_clean = ExcelExtractor.night_CCC2Df(CCC2_night_df)
+    #     CCC2_day_df_clean2 = ExcelExtractor.day_CCC2Df(CCC2_day_df2)
+    #     CCC2_night_df_clean2 = ExcelExtractor.night_CCC2Df(CCC2_night_df2)
 
-    print("Succesfully processed data")
+    #     print("Succesfully processed data")
 
-# except Exception as e:
-#     print("Theres a problem while processing dataframes")
-#     print("Error: " , str(e))
+    # except Exception as e:
+    #     print("Theres a problem while processing dataframes")
+    #     print("Error: " , str(e))
 
     # insert data for CCC4
     try:
         print("inserting data for CCC4...")
 
-        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean, file_dir['main_excel'])
-        ExcelCreator.CCC4DataInsert(
-            CCC4_night_df_clean, file_dir['main_excel'])
-        ExcelCreator.CCC4DataInsert(CCC4_day_df_clean2, file_dir['main_excel'])
-        ExcelCreator.CCC4DataInsert(
-            CCC4_night_df_clean2, file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(CCC4Day(), file_dir['main_excel'])
+        ExcelCreator.CCC2DataInsert(CCC2Day(), file_dir['main_excel'])
 
-        print("Succesfully inserted CCC4 data")
-    except PermissionError as e:
-        print("Theres a problem while saving the excel file. Close file if its active.")
-        print(str(e))
+        ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
 
-    except Exception as e:
-        print("Theres a problem while inserting CCC4 data")
-        print("Error: " , str(e))
+    # ExcelCreator.CCC4DataInsert(CCC4_day_df_clean, file_dir['main_excel'])
+    # ExcelCreator.CCC4DataInsert(
+    #     CCC4_night_df_clean, file_dir['main_excel'])
+    # ExcelCreator.CCC4DataInsert(CCC4_day_df_clean2, file_dir['main_excel'])
+    # ExcelCreator.CCC4DataInsert(
+    #     CCC4_night_df_clean2, file_dir['main_excel'])
+
+    # print("Succesfully inserted CCC4 data")
+
+    # except PermissionError as e:
+    #     print("Theres a problem while saving the excel file. Close file if its active.")
+    #     print(str(e))
+
+    # except Exception as e:
+    #     print("Theres a problem while inserting CCC4 data")
+    #     print("Error: ", str(e))
+
     # insert data for CCC2
-    try:
-        print("inserting data for CCC2...")
+    # try:
+    #     return
+    #     print("inserting data for CCC2...")
 
-        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean, file_dir['main_excel'])
-        ExcelCreator.CCC2DataInsert(
-            CCC2_night_df_clean, file_dir['main_excel'])
-        ExcelCreator.CCC2DataInsert(CCC2_day_df_clean2, file_dir['main_excel'])
-        ExcelCreator.CCC2DataInsert(
-            CCC2_night_df_clean2, file_dir['main_excel'])
+    #     ExcelCreator.CCC2DataInsert(CCC2_day_df_clean, file_dir['main_excel'])
+    #     ExcelCreator.CCC2DataInsert(
+    #         CCC2_night_df_clean, file_dir['main_excel'])
+    #     ExcelCreator.CCC2DataInsert(CCC2_day_df_clean2, file_dir['main_excel'])
+    #     ExcelCreator.CCC2DataInsert(
+    #         CCC2_night_df_clean2, file_dir['main_excel'])
 
-        print("Succesfully inserted CCC2 data")
+    #     print("Succesfully inserted CCC2 data")
 
     except PermissionError as e:
         print("Theres a problem while saving the excel file. Close file if its active.")
@@ -118,7 +125,7 @@ def main():
 
     except Exception as e:
         print("Theres a problem while inserting CCC2 data")
-        print("Error: " , str(e))
+        print("Error: ", str(e))
 
     # CCC6 data insertion
     try:
@@ -224,7 +231,7 @@ def main():
     try:
         print("Sending excel file to sharepoint...")
         mailItem.Display()
-        #mailItem.Send()
+        # mailItem.Send()
 
         print("Successfully sent excel file to sharepoint")
 

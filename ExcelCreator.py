@@ -205,8 +205,10 @@ def createWorkbook(excel_dir):
     # save xl to explorer
     wb.save(excel_dir)
 
+# previous way
 
-def CCC4DataInsert(factDf, excel_dir):
+
+def CCC4DataInsert1(factDf, excel_dir):
     wb = load_workbook(excel_dir)
     ws = wb.active
 
@@ -377,8 +379,76 @@ def CCC4DataInsert(factDf, excel_dir):
 
     wb.save(excel_dir)
 
+# new way
 
-def CCC2DataInsert(factDf, excel_dir):
+
+def CCC4DataInsert(factDf, excel_dir):
+
+    wb = load_workbook(excel_dir)
+    ws = wb.active
+
+    on_duty, off_duty, shift, date = factDf
+
+    if shift == 'day':
+
+        for col in ws.iter_cols(min_col=2, min_row=9, max_col=2, max_row=9 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['By Line']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=3, min_row=9, max_col=3, max_row=9 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['On Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=4, min_row=9, max_col=4, max_row=9 + off_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = off_duty.iloc[i]['Off Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        # UPH
+        ws['E9'] = on_duty['UPH'].values[0]
+        ws['E11'] = on_duty['UPH'].values[2]
+
+        # date
+        ws['J7'] = date
+
+    if shift == 'night':
+
+        for col in ws.iter_cols(min_col=6, min_row=11, max_col=6, max_row=11 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['On duty time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=7, min_row=11, max_col=7, max_row=11 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = off_duty.iloc[i]['Off Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        # UPH
+        ws['H11'] = on_duty['UPH'].values[0]
+
+    wb.save(excel_dir)
+
+# previous way
+
+
+def CCC2DataInsert1(factDf, excel_dir):
     wb = load_workbook(excel_dir)
     ws = wb.active
 
@@ -576,6 +646,72 @@ def CCC2DataInsert(factDf, excel_dir):
                     cell.alignment = Alignment(horizontal='center')
 
                     i += 1
+
+    wb.save(excel_dir)
+
+# new way
+
+
+def CCC2DataInsert(factDf, excel_dir):
+
+    wb = load_workbook(excel_dir)
+    ws = wb.active
+
+    on_duty, off_duty, shift, date = factDf
+
+    if shift == 'day':
+
+        for col in ws.iter_cols(min_col=2, min_row=18, max_col=2, max_row=18 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['By Line']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=3, min_row=18, max_col=3, max_row=18 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['On Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=4, min_row=18, max_col=4, max_row=18 + off_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = off_duty.iloc[i]['Off Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        # UPH
+        ws['E18'] = on_duty['UPH'].values[0]
+        ws['E20'] = on_duty['UPH'].values[2]
+
+    if shift == 'night':
+
+        for col in ws.iter_cols(min_col=6, min_row=18, max_col=6, max_row=18 + on_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = on_duty.iloc[i]['On duty time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        for col in ws.iter_cols(min_col=7, min_row=18, max_col=7, max_row=18 + off_duty.shape[0]-1):
+            i = 0
+            for cell in col:
+                cell.value = off_duty.iloc[i]['Off Duty Time']
+                cell.alignment = Alignment(horizontal='center')
+
+                i += 1
+
+        # UPH
+        ws['H18'] = on_duty['UPH'].values[0]
+        ws['H20'] = on_duty['UPH'].values[2]
+
+        ws['J16'] = date
 
     wb.save(excel_dir)
 

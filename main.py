@@ -25,6 +25,7 @@ def main():
     #f = r"C:\Users\Yusuf\Documents\My Project\Factory Work Plan\ExcelExtractor\sources\Production Line Arrangement of 2022.xlsx"
 
     # r'\\w1039fnf93.dhcp.apac.dell.com\PlannerDoc\SHIFT ARRANGEMENT\Production Line Arrangement of 2022.xlsx' #file_dir['CCC2/4']
+
     f = r'sources\Production Line Arrangement of 2022.xlsx'
 
     # create workbook named Consolidated Factory Workplan
@@ -79,14 +80,6 @@ def main():
     #     print("Error: " , str(e))
 
     # insert data for CCC4
-    try:
-        print("inserting data for CCC4...")
-
-        ExcelCreator.CCC4DataInsert(CCC4Day(), file_dir['main_excel'])
-        ExcelCreator.CCC2DataInsert(CCC2Day(), file_dir['main_excel'])
-
-        ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
-        ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
 
     # ExcelCreator.CCC4DataInsert(CCC4_day_df_clean, file_dir['main_excel'])
     # ExcelCreator.CCC4DataInsert(
@@ -118,6 +111,16 @@ def main():
     #         CCC2_night_df_clean2, file_dir['main_excel'])
 
     #     print("Succesfully inserted CCC2 data")
+
+    try:
+        print("inserting data for CCC4...")
+
+        ExcelCreator.CCC4DataInsert(CCC4Day(), file_dir['main_excel'])
+        ExcelCreator.CCC2DataInsert(CCC2Day(), file_dir['main_excel'])
+
+        ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
+        ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
+
 
     except PermissionError as e:
         print("Theres a problem while saving the excel file. Close file if its active.")

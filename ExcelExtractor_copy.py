@@ -2,7 +2,7 @@ from calendar import month
 from itertools import dropwhile
 from operator import index
 from turtle import right
-from cv2 import threshold
+#from cv2 import threshold
 import pandas as pd
 import numpy as np
 import glob

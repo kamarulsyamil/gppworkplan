@@ -35,83 +35,6 @@ def main():
 
     print("Data processing started...")
 
-    # gather dataframes
-
-    # try:
-
-    #     print("Gathering data...")
-
-    #     CCC4_day_df = ExcelExtractor.day_CCC4(f)[0]
-    #     CCC4_night_df = ExcelExtractor.night_CCC4(f)[0]
-    #     CCC4_day_df2 = ExcelExtractor.day_CCC4(f)[1]
-    #     CCC4_night_df2 = ExcelExtractor.night_CCC4(f)[1]
-
-    #     CCC2_day_df = ExcelExtractor.day_CCC2(f)[0]
-    #     CCC2_night_df = ExcelExtractor.night_CCC2(f)[0]
-
-    #     CCC2_day_df2 = ExcelExtractor.day_CCC2(f)[1]
-    #     CCC2_night_df2 = ExcelExtractor.night_CCC2(f)[1]
-
-    #     print("Succesfully gathered data")
-
-    # except Exception as e:
-    #     print("Theres a problem while gathering dataframes")
-    #     print("Error: " , str(e))
-
-    # # process dataframes
-
-    # try:
-    #     print("Processing data...")
-
-    #     CCC4_day_df_clean = ExcelExtractor.day_CCC4Df(CCC4_day_df)
-    #     CCC4_night_df_clean = ExcelExtractor.night_CCC4Df(CCC4_night_df)
-    #     CCC4_day_df_clean2 = ExcelExtractor.day_CCC4Df(CCC4_day_df2)
-    #     CCC4_night_df_clean2 = ExcelExtractor.night_CCC4Df(CCC4_night_df2)
-
-    #     CCC2_day_df_clean = ExcelExtractor.day_CCC2Df(CCC2_day_df)
-    #     CCC2_night_df_clean = ExcelExtractor.night_CCC2Df(CCC2_night_df)
-    #     CCC2_day_df_clean2 = ExcelExtractor.day_CCC2Df(CCC2_day_df2)
-    #     CCC2_night_df_clean2 = ExcelExtractor.night_CCC2Df(CCC2_night_df2)
-
-    #     print("Succesfully processed data")
-
-    # except Exception as e:
-    #     print("Theres a problem while processing dataframes")
-    #     print("Error: " , str(e))
-
-    # insert data for CCC4
-
-    # ExcelCreator.CCC4DataInsert(CCC4_day_df_clean, file_dir['main_excel'])
-    # ExcelCreator.CCC4DataInsert(
-    #     CCC4_night_df_clean, file_dir['main_excel'])
-    # ExcelCreator.CCC4DataInsert(CCC4_day_df_clean2, file_dir['main_excel'])
-    # ExcelCreator.CCC4DataInsert(
-    #     CCC4_night_df_clean2, file_dir['main_excel'])
-
-    # print("Succesfully inserted CCC4 data")
-
-    # except PermissionError as e:
-    #     print("Theres a problem while saving the excel file. Close file if its active.")
-    #     print(str(e))
-
-    # except Exception as e:
-    #     print("Theres a problem while inserting CCC4 data")
-    #     print("Error: ", str(e))
-
-    # insert data for CCC2
-    # try:
-    #     return
-    #     print("inserting data for CCC2...")
-
-    #     ExcelCreator.CCC2DataInsert(CCC2_day_df_clean, file_dir['main_excel'])
-    #     ExcelCreator.CCC2DataInsert(
-    #         CCC2_night_df_clean, file_dir['main_excel'])
-    #     ExcelCreator.CCC2DataInsert(CCC2_day_df_clean2, file_dir['main_excel'])
-    #     ExcelCreator.CCC2DataInsert(
-    #         CCC2_night_df_clean2, file_dir['main_excel'])
-
-    #     print("Succesfully inserted CCC2 data")
-
     try:
         print("inserting data for CCC4...")
 
@@ -120,7 +43,6 @@ def main():
 
         ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
         ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
-
 
     except PermissionError as e:
         print("Theres a problem while saving the excel file. Close file if its active.")
@@ -144,56 +66,72 @@ def main():
 
         for i in getTableEmail():
 
-            factName = re.search('(ICC|APCC|BRH)', i.Body).group(0)
+            factName = re.search('(ICC|APCC|BRH)', i.Body)
 
-            # dataframe of APCC table from email
-            data = pd.read_html(i.HTMLBody)
-            # print(msg.Body)
+            # EMFP OT
+            Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
+
+            # dataframe of table from email
+            #data = pd.read_html(i.HTMLBody)
+
+            # print(i.Body)
 
             #data2 = data1.drop_duplicates(subset='0')
 
-            if factName == 'APCC':
-                # drop duplicates and NA
-                data1 = data[0].dropna(axis=1, how='all', thresh=3)
+            if factName != None:
+                if factName.group(0) == 'APCC':
+                    # drop duplicates and NA
+                    data1 = pd.read_html(i.HTMLBody)[0].dropna(
+                        axis=1, how='all', thresh=3)
 
-                data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
+                    data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-                data2 = data1  # .drop_duplicates()
-                # print(data2)
+                    data2 = data1  # .drop_duplicates()
+                    # print(data2)
 
-                if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
-                    data3 = data2.drop(data2.index[range(5)])
-                    # print(data3.reset_index(drop=True))
-                    df = data3.reset_index(drop=True)
+                    if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
+                        data3 = data2.drop(data2.index[range(5)])
+                        # print(data3.reset_index(drop=True))
+                        df = data3.reset_index(drop=True)
 
-                    # insert data for APCC
-                    ExcelCreator.APCCDataInsert(
-                        APCClogic(df, factName), file_dir['main_excel'])
+                        # insert data for APCC
+                        ExcelCreator.APCCDataInsert(
+                            APCClogic(df, factName), file_dir['main_excel'])
 
-            elif factName == 'ICC':
-                # change header of datarframe
-                new_header = data[3].iloc[0]
-                df = data[3][1:]
-                df.columns = new_header
+                elif factName.group(0) == 'ICC':
+                    # change header of datarframe
+                    new_header = pd.read_html(i.HTMLBody)[3].iloc[0]
+                    df = pd.read_html(i.HTMLBody)[3][1:]
+                    df.columns = new_header
 
-                # insert data for ICC
-                ExcelCreator.ICCDataInsert(
-                    ICClogic(df, factName), file_dir['main_excel'])
+                    # insert data for ICC
+                    ExcelCreator.ICCDataInsert(
+                        ICClogic(df, factName), file_dir['main_excel'])
 
-            elif factName == 'BRH':
-                new_header = data[0].iloc[0]
-                df = data[0][1:]
-                df.columns = new_header
+                elif factName.group(0) == 'BRH':
+                    new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
+                    df = pd.read_html(i.HTMLBody)[0][1:]
+                    df.columns = new_header
 
-                df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
+                    df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
 
-                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
-                df1.columns = new_header
+                    new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
+                    df1.columns = new_header
 
-                df1 = df1.fillna(0)
+                    df1 = df1.fillna(0)
 
-                ExcelCreator.BRH1DataInsert(
-                    BRHlogic(df1, factName), file_dir['main_excel'])
+                    ExcelCreator.BRH1DataInsert(
+                        BRHlogic(df1, factName), file_dir['main_excel'])
+            else:
+                print("No ICC, BRH, APCC emails workplan found")
+
+            if Ot_EMFP != None:
+                print("EMFP OT email found")
+                ExcelCreator.OTDataInsert(
+                    'EMFP', i.Body, file_dir['main_excel'])
+
+            else:
+                print("No EMFP OT email found")
 
         print("Done!")
 
@@ -201,16 +139,18 @@ def main():
         print("Theres a problem while saving the excel file. Close file if its active.")
         print(str(e))
 
-    except:
+    except Exception as e:
         print("Error while processing data from e-mail")
+        print(str(e))
 
     # EMFP insertion
     try:
         print("Inserting data for EMFP...")
         ExcelCreator.EMFPDataInsert(
             EMFPlogic(file_dir["EMFP"]), file_dir['main_excel'])
-    except:
+    except Exception as e:
         print("failed to insert EMFP data")
+        print(str(e))
 
     # Send email to sharepoint
 

@@ -1,6 +1,6 @@
 from statistics import mode
 from time import gmtime, strftime
-from numpy import float64
+from numpy import double, float64
 import xlsxwriter as xlwrite
 from EmailExtractor import EMFPlogic, ICClogic
 from ExcelExtractor import *
@@ -20,6 +20,8 @@ date = datetime.date.today()
 
 def createWorkbook(excel_dir):
 
+    global double
+
     double = Border(left=Side(style='thin'),
                     right=Side(style='thin'),
                     top=Side(style='thin'),
@@ -30,11 +32,11 @@ def createWorkbook(excel_dir):
     fName = ['CCC4 (CST)', 'CCC2 (CST)', 'CCC6 (CST)',
              'APCC (MYT)', 'ICC (IST)', 'EMFP (CET)', 'BRH1 (BRT)']
 
-    CCC4List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell K6',
-                'SV Kitting&Cell K7', 'SV Backend', 'Storage line', 'CFS']
+    # CCC4List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell K6',
+    #             'SV Kitting&Cell K7', 'SV Backend', 'Storage line', 'CFS']
 
-    CCC2List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell',
-                'SV Backend', 'K8 line', 'ARB']
+    # CCC2List = ['DT Kitting&Cell', 'DT Backend', 'SV Kitting&Cell',
+    #             'SV Backend', 'K8 line', 'ARB']
 
     APCCList = ['Desktop', 'HYBRID 1', 'HYBRID 2', 'Server']
 
@@ -43,8 +45,8 @@ def createWorkbook(excel_dir):
 
     BRHList = ['Notebook', 'Desktop', 'Server', 'AIO']
 
-    CCC6List = ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5',
-                'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
+    # CCC6List = ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5',
+    #             'Line 6', 'Line 7', 'Line 8', 'Line 9', 'Line 10']
 
     subheader = ['Line', 'Start Time', 'End Time',
                  'UPH', 'Start Time', 'End Time', 'UPH', 'Start Time', 'End Time', 'UPH']
@@ -121,19 +123,19 @@ def createWorkbook(excel_dir):
     ws.merge_cells(start_column=5, start_row=18, end_column=5, end_row=19)
     ws.merge_cells(start_column=5, start_row=20, end_column=5, end_row=21)
 
-    for col in ws.iter_cols(min_col=2, min_row=9, max_col=2, max_row=8 + len(CCC4List)):
-        i = 0
-        for cell in col:
-            cell.value = CCC4List[i]
-            i += 1
+    # for col in ws.iter_cols(min_col=2, min_row=9, max_col=2, max_row=8 + len(CCC4List)):
+    #     i = 0
+    #     for cell in col:
+    #         cell.value = CCC4List[i]
+    #         i += 1
 
-    for col in ws.iter_cols(min_col=2, min_row=18, max_col=2, max_row=17 + len(CCC2List)):
-        i = 0
-        for cell in col:
-            cell.value = CCC2List[i]
-            i += 1
+    # for col in ws.iter_cols(min_col=2, min_row=18, max_col=2, max_row=17 + len(CCC2List)):
+    #     i = 0
+    #     for cell in col:
+    #         cell.value = CCC2List[i]
+    #         i += 1
 
-        # APCC
+    # APCC
     for col in ws.iter_cols(min_col=2, min_row=34, max_col=2, max_row=33 + len(APCCList)):
         i = 0
         for cell in col:
@@ -201,6 +203,18 @@ def createWorkbook(excel_dir):
                            end_row=header, end_column=11)
 
         header += 1
+
+    # OT Table
+    ws.cell(row=65, column=2).value = "Factory Overtime"
+    ws.cell(row=65, column=3).value = "E-Mail content"
+
+    ws["B65"].border = double
+    ws["C65"].border = double
+    ws["B65"].font = Font(bold=True)
+    ws["C65"].font = Font(bold=True)
+
+    ws["B66"].border = double
+    ws["C66"].border = double
 
     # save xl to explorer
     wb.save(excel_dir)
@@ -998,5 +1012,14 @@ def EMFPDataInsert(df, excel_dir):
     wb.save(excel_dir)
 
 
-# EMFPDataInsert()
-# CCC6DataInsert()
+def OTDataInsert(factname, email_body, excel_dir):
+    wb = load_workbook(excel_dir)
+    ws = wb.active
+
+    ws.cell(row=66, column=2).value = factname
+    ws.cell(row=66, column=3).value = email_body
+
+    wb.save(excel_dir)
+
+    # EMFPDataInsert()
+    # CCC6DataInsert()

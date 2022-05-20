@@ -1,14 +1,16 @@
-from webbrowser import get
 from EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
 from ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
 import ExcelCreator
-import ExcelExtractor
 import os.path
 import re
 import pandas as pd
 import os
 import win32com.client as win32
 import json
+from openpyxl import load_workbook
+import datetime
+from openpyxl.styles import Alignment
+from time import gmtime, strftime
 
 
 def main():
@@ -180,6 +182,16 @@ def main():
 
     except Exception as e:
         print(e)
+
+    # Updated time
+    wb = load_workbook(file_dir['main_excel'])
+    ws = wb.active
+
+    ws['F5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    ws['F5'].alignment = Alignment(horizontal='left')
+    ws['I5'] = strftime("%z", gmtime())
+
+    wb.save(file_dir['main_excel'])
 
 
 if __name__ == "__main__":

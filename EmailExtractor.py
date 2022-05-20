@@ -33,7 +33,7 @@ def getTableEmail():
 
     # filter to the target email
     filtered = [
-        item for item in mail_items if item.Unread and item.Senton.date() == today and 'EMFP Overtime' in item.Subject]
+        item for item in mail_items if item.Unread and item.Senton.date() == today or 'EMFP Overtime' in item.Subject]
 
     if len(filtered) == 0:
         print("No filtered email(s)")

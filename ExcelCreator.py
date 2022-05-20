@@ -761,10 +761,6 @@ def APCCDataInsert(df, excel_dir):
             cell.value = list(second_shift_list)[i]
             i += 1
 
-    ws['F5'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    ws['F5'].alignment = Alignment(horizontal='left')
-    ws['I5'] = strftime("%z", gmtime())
-
     wb.save(excel_dir)
 
 

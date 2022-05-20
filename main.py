@@ -80,6 +80,8 @@ def main():
 
             if factName != None:
                 if factName.group(0) == 'APCC':
+                    print("Found APCC workplan")
+
                     # drop duplicates and NA
                     data1 = pd.read_html(i.HTMLBody)[0].dropna(
                         axis=1, how='all', thresh=3)
@@ -99,6 +101,8 @@ def main():
                             APCClogic(df, factName), file_dir['main_excel'])
 
                 elif factName.group(0) == 'ICC':
+                    print("Found ICC workplan")
+
                     # change header of datarframe
                     new_header = pd.read_html(i.HTMLBody)[3].iloc[0]
                     df = pd.read_html(i.HTMLBody)[3][1:]
@@ -109,6 +113,7 @@ def main():
                         ICClogic(df, factName), file_dir['main_excel'])
 
                 elif factName.group(0) == 'BRH':
+                    print("Found BRH workplan")
                     new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
                     df = pd.read_html(i.HTMLBody)[0][1:]
                     df.columns = new_header
@@ -122,16 +127,11 @@ def main():
 
                     ExcelCreator.BRH1DataInsert(
                         BRHlogic(df1, factName), file_dir['main_excel'])
-            else:
-                print("No ICC, BRH, APCC emails workplan found")
 
-            if Ot_EMFP != None:
+            elif Ot_EMFP != None:
                 print("EMFP OT email found")
                 ExcelCreator.OTDataInsert(
                     'EMFP', i.Body, file_dir['main_excel'])
-
-            else:
-                print("No EMFP OT email found")
 
         print("Done!")
 

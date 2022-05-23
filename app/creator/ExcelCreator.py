@@ -1,9 +1,6 @@
-from statistics import mode
 from time import gmtime, strftime
-from numpy import double, float64
+from numpy import double
 import xlsxwriter as xlwrite
-from EmailExtractor import EMFPlogic, ICClogic
-from ExcelExtractor import *
 import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, Alignment, numbers
@@ -880,7 +877,7 @@ def CCC6DataInsert(excel_dir):
     # insert from config file
     # CCC6
 
-    config_path = r"sources\factory_config.json"
+    config_path = r"app\configuration\factory_config.json"
     # read config file
     with open(config_path) as config_file:
         config = json.load(config_file)
@@ -929,7 +926,7 @@ def BRH1DataInsert(df, excel_dir):
 
     first_hrs, second_hrs, first_UPH, second_UPH = df
 
-    config_path = r"sources\factory_config.json"
+    config_path = r"app\configuration\factory_config.json"
     # read config file
     with open(config_path) as config_file:
         config = json.load(config_file)

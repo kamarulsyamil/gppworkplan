@@ -1,6 +1,6 @@
-from EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
-from ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
-import ExcelCreator
+from app.extractor.EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
+from app.extractor.ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
+import app.creator.ExcelCreator as ExcelCreator
 import os.path
 import re
 import pandas as pd
@@ -13,9 +13,9 @@ from openpyxl.styles import Alignment
 from time import gmtime, strftime
 
 
-def main():
+def mainn():
 
-    config_path = r"tool_config.json"
+    config_path = r"app\configuration\tool_config.json"
 
     # read config file
     with open(config_path) as config_file:
@@ -157,31 +157,31 @@ def main():
     # Send email to sharepoint
 
     # construct Outlook application instance
-    olApp = win32.Dispatch('Outlook.Application')
-    olNS = olApp.GetNameSpace('MAPI')
+    # olApp = win32.Dispatch('Outlook.Application')
+    # olNS = olApp.GetNameSpace('MAPI')
 
-    # construct the email item object
-    mailItem = olApp.CreateItem(0)
-    mailItem.Subject = 'Test '  # can be any subject
-    mailItem.BodyFormat = 1
-    mailItem.Body = "Attachment of Consolidate View"  # can be any body
-    mailItem.To = sharepoint["email"]
+    # # construct the email item object
+    # mailItem = olApp.CreateItem(0)
+    # mailItem.Subject = 'Test '  # can be any subject
+    # mailItem.BodyFormat = 1
+    # mailItem.Body = "Attachment of Consolidate View"  # can be any body
+    # mailItem.To = sharepoint["email"]
 
-    # mailItem._oleobj_.Invoke(*(64209, 0, 8, 0, olNS.Accounts.Item('<email@gmail.com'))) [NOTHING JUST IGNORE FOR NOW! DONT DELETE ]
+    # # mailItem._oleobj_.Invoke(*(64209, 0, 8, 0, olNS.Accounts.Item('<email@gmail.com'))) [NOTHING JUST IGNORE FOR NOW! DONT DELETE ]
 
-    mailItem.Attachments.Add(os.path.join(
-        os.getcwd(), file_dir['main_excel']))
-    # mailItem.Attachments.Add(os.path.join(os.getcwd(), r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Test2.csv')) <*sample*>
+    # mailItem.Attachments.Add(os.path.join(
+    #     os.getcwd(), file_dir['main_excel']))
+    # # mailItem.Attachments.Add(os.path.join(os.getcwd(), r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Test2.csv')) <*sample*>
 
-    try:
-        print("Sending excel file to sharepoint...")
-        mailItem.Display()
-        # mailItem.Send()
+    # try:
+    #     print("Sending excel file to sharepoint...")
+    #     mailItem.Display()
+    #     # mailItem.Send()
 
-        print("Successfully sent excel file to sharepoint")
+    #     print("Successfully sent excel file to sharepoint")
 
-    except Exception as e:
-        print(e)
+    # except Exception as e:
+    #     print(e)
 
     # Updated time
     wb = load_workbook(file_dir['main_excel'])
@@ -194,5 +194,5 @@ def main():
     wb.save(file_dir['main_excel'])
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

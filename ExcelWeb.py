@@ -4,11 +4,11 @@ import json
 
 st.set_page_config(page_title='Factories Workplans Consolidated')
 st.header('GPP Workplan (Shift times)')
-st.subheader('Updated on :')
 
 # LOAD EXCEL
 # read config file
-with open(r"tool_config.json") as config_file:
+
+with open(r"app\configuration\tool_config.json") as config_file:
     config = json.load(config_file)
     file_dir = config['file_dir']
 
@@ -18,7 +18,17 @@ sheet_name = 'Workplans'
 
 df = pd.read_excel(excel_file, sheet_name=sheet_name, usecols='B:K', header=7)
 df2 = df.fillna('')
+
+datedf = pd.read_excel(excel_file, sheet_name=sheet_name,
+                       usecols='F:F', nrows=1, header=3)
+
+date = datedf.iloc[0][0]
+
+
+st.subheader('Updated on :' + date)
+
 st.write(df2.astype(str))
+
 
 option = st.selectbox(
     'Choose factory',
@@ -46,3 +56,14 @@ elif option == 'EMFP':
 
 elif option == 'BRH1':
     st.write(df2.iloc[49:56, :].astype(str))
+
+with open(file_dir['main_excel'], 'rb') as file:
+    btn = st.download_button(
+        label="Download workplan",
+        data=file,
+        file_name=file_dir['main_excel']
+    )
+
+if st.button('Say hello'):
+    st.write('hi')
+    # main()

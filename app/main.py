@@ -1,6 +1,6 @@
-from app.extractor.EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
-from app.extractor.ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
-import app.creator.ExcelCreator as ExcelCreator
+from extractor.EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
+from extractor.ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
+import creator.ExcelCreator as ExcelCreator
 import os.path
 import re
 import pandas as pd
@@ -13,7 +13,7 @@ from openpyxl.styles import Alignment
 from time import gmtime, strftime
 
 
-def mainn():
+def main():
 
     config_path = r"app\configuration\tool_config.json"
 

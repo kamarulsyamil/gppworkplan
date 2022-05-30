@@ -14,7 +14,7 @@ import glob
 
 fact_data = pd.DataFrame()
 
-f = r"sources\Production Line Arrangement of 2022.xlsx"
+f = "\\\\w1039fnf93.dhcp.apac.dell.com\\PlannerDoc\\SHIFT ARRANGEMENT\\Production Line Arrangement of 2022.xlsx" #r"sources\Production Line Arrangement of 2022.xlsx"
 
 # process excel shifts of CCC4
 
@@ -42,25 +42,29 @@ def CCC2Day():
 
     # if not df3[df3['0'].str.contains("CCC4", na=False)].empty:
 
-    num = "May.10"
+    num = "May.25"
 
     date = df3[df3['0'].str.contains(
-        "(?=.*%s)(?=.*Day Shift).*" % num, na=False)].index.values
+        "(?=.*%s)(?=.*Today|.*Next)(?!.*Turn).*" % num, na=False)].index.values
 
     dfList = df3[df3['0'] == "Total HC:"].index.values
+    
+    try:
+        for i in range(0, 2):
+            C4Df = df3.iloc[date[(-1)-i]:dfList[dfList > date[(-1)-i]][0], :]
+            header = C4Df.iloc[0]
+            C4Df = C4Df[1:]
+            C4Df.columns = header
 
-    for i in range(0, 2):
-        C4Df = df3.iloc[date[i]+1:dfList[dfList > date[i]][0], :]
-        header = C4Df.iloc[0]
-        C4Df = C4Df[1:]
-        C4Df.columns = header
+            if i == 0:
+                off_duty = C4Df.dropna(how="all", axis=1)
+            elif i == 1:
+                on_duty = C4Df.dropna(how="all", axis=1)
 
-        if i == 0:
-            on_duty = C4Df.dropna(how="all", axis=1)
-        elif i == 1:
-            off_duty = C4Df.dropna(how="all", axis=1)
-
-    return on_duty, off_duty, shift, num
+        return on_duty, off_duty, shift, num
+    
+    except IndexError as e:
+        print("Shift times is incomplete for this date. Please try another date.")
 
 
 def CCC4Day():
@@ -82,7 +86,7 @@ def CCC4Day():
     # print(df2[df2['1']:])
 
     # if not df3[df3['0'].str.contains("CCC4", na=False)].empty:
-    num = "Apr.20"
+    num = "May.25"
     date = df3[df3['0'].str.contains(
         "(?=.*%s)(?=.*Day Shift).*" % num, na=False)].index.values
 
@@ -105,7 +109,7 @@ def CCC4Day():
 def CCC2Night():
     shift = 'night'
 
-    # day shift C4 side
+    # night shift C2 side
     df = xl.parse(sheet_name=2, usecols="C:K")
     df1 = df.dropna(how='all')
     df2 = df1.dropna(how='all', axis=1)
@@ -122,24 +126,27 @@ def CCC2Night():
 
     # if not df3[df3['0'].str.contains("CCC4", na=False)].empty:
 
-    num = 'May-06'
-    date = df3[df3['0'].str.contains(
-        "(?=.*%s)(?=.*Night-Shift).*" % num, na=False)].index.values
+    try:
+        num = 'Apr-20'
+        date = df3[df3['0'].str.contains(
+            "(?=.*%s)(?=.*Night-Shift).*" % num, na=False)].index.values
 
-    dfList = df3[df3['0'] == "Total HC:"].index.values
+        dfList = df3[df3['0'] == "Total HC:"].index.values
 
-    for i in range(0, 2):
-        C4Df = df3.iloc[date[i]+1:dfList[dfList > date[i]][0], :]
-        header = C4Df.iloc[0]
-        C4Df = C4Df[1:]
-        C4Df.columns = header
+        for i in range(0, 2):
+            C4Df = df3.iloc[date[i]+1:dfList[dfList > date[i]][0], :]
+            header = C4Df.iloc[0]
+            C4Df = C4Df[1:]
+            C4Df.columns = header
 
-        if i == 0:
-            on_duty = C4Df.dropna(how="all", axis=1)
-        elif i == 1:
-            off_duty = C4Df.dropna(how="all", axis=1)
+            if i == 0:
+                on_duty = C4Df.dropna(how="all", axis=1)
+            elif i == 1:
+                off_duty = C4Df.dropna(how="all", axis=1)
 
-    return on_duty, off_duty, shift, num
+        return on_duty, off_duty, shift, num
+    except IndexError as e:
+        print(str(e))
 
 
 def CCC4Night():
@@ -184,6 +191,3 @@ def CCC4Night():
             off_duty = C4Df.dropna(how="all", axis=1)
 
     return on_duty, off_duty, shift, num
-
-
-CCC4Night()

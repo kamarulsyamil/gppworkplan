@@ -1,6 +1,6 @@
-from app.extractor.EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
-from app.extractor.ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
-import app.creator.ExcelCreator as ExcelCreator
+from extractor.EmailExtractor import APCClogic, BRHlogic, EMFPlogic, ICClogic, getTableEmail
+from extractor.ExcelExtractor_copy import CCC2Night, CCC4Day, CCC2Day, CCC4Night
+import creator.ExcelCreator as ExcelCreator
 import os.path
 import re
 import pandas as pd
@@ -13,7 +13,7 @@ from openpyxl.styles import Alignment
 from time import gmtime, strftime
 
 
-def mainn():
+def main():
 
     config_path = r"app\configuration\tool_config.json"
 
@@ -68,7 +68,7 @@ def mainn():
 
         for i in getTableEmail():
 
-            factName = re.search('(ICC|APCC|BRH)', i.Body)
+            factName = re.search('(ICC|APCC|BRH)', i.Body) #perlu diubah
 
             # EMFP OT
             Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
@@ -78,7 +78,7 @@ def mainn():
 
             # print(i.Body)
 
-            #data2 = data1.drop_duplicates(subset='0')
+            #data1 = data1.drop_duplicates(subset='0')
 
             if factName != None:
                 if factName.group(0) == 'APCC':
@@ -90,11 +90,8 @@ def mainn():
 
                     data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-                    data2 = data1  # .drop_duplicates()
-                    # print(data2)
-
-                    if not data2[data2['Date'].astype(str).str.contains("Date")].empty:
-                        data3 = data2.drop(data2.index[range(5)])
+                    if not data1[data1['Date'].astype(str).str.contains("Date")].empty:
+                        data3 = data1.drop(data1.index[range(5)])
                         # print(data3.reset_index(drop=True))
                         df = data3.reset_index(drop=True)
 
@@ -154,35 +151,6 @@ def mainn():
         print("failed to insert EMFP data")
         print(str(e))
 
-    # Send email to sharepoint
-
-    # construct Outlook application instance
-    # olApp = win32.Dispatch('Outlook.Application')
-    # olNS = olApp.GetNameSpace('MAPI')
-
-    # # construct the email item object
-    # mailItem = olApp.CreateItem(0)
-    # mailItem.Subject = 'Test '  # can be any subject
-    # mailItem.BodyFormat = 1
-    # mailItem.Body = "Attachment of Consolidate View"  # can be any body
-    # mailItem.To = sharepoint["email"]
-
-    # # mailItem._oleobj_.Invoke(*(64209, 0, 8, 0, olNS.Accounts.Item('<email@gmail.com'))) [NOTHING JUST IGNORE FOR NOW! DONT DELETE ]
-
-    # mailItem.Attachments.Add(os.path.join(
-    #     os.getcwd(), file_dir['main_excel']))
-    # # mailItem.Attachments.Add(os.path.join(os.getcwd(), r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Test2.csv')) <*sample*>
-
-    # try:
-    #     print("Sending excel file to sharepoint...")
-    #     mailItem.Display()
-    #     # mailItem.Send()
-
-    #     print("Successfully sent excel file to sharepoint")
-
-    # except Exception as e:
-    #     print(e)
-
     # Updated time
     wb = load_workbook(file_dir['main_excel'])
     ws = wb.active
@@ -194,5 +162,5 @@ def mainn():
     wb.save(file_dir['main_excel'])
 
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()

@@ -58,8 +58,8 @@ def getTableEmail():
 
 
 def APCClogic(df, factName):
-    # date = date.strftime('%d-%b')
-    date = '22-Feb'
+    date = today.strftime('%d-%b')
+    #date = '30-May'
 
     first_shift = []
     second_shift = []
@@ -140,6 +140,8 @@ def ICClogic(df, factName):
     #df, factoryname = getTableEmail(ICCemail)
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
+
+    print(df)
 
     for i, row in df.iterrows():
         data = str(row['FRONT END']).replace(" ", "")

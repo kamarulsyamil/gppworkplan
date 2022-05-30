@@ -63,84 +63,86 @@ def main():
     # FROM EMAIL
     # ---------------------------------------------------
 
-    try:
-        print("Inserting data for ICC and APCC workplans")
+    #try:
+    print("Inserting data for ICC and APCC workplans")
 
-        for i in getTableEmail():
+    for i in getTableEmail():
 
-            factName = re.search('(ICC|APCC|BRH)', i.Body) #perlu diubah
+        factName = re.search('(Tom Shift|Work Plan|Commit Produção)', i.Body) #perlu diubah Tom shift = ICC, Work Plan = APCC, 
 
-            # EMFP OT
-            Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
+        # EMFP OT
+        Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
 
-            # dataframe of table from email
-            #data = pd.read_html(i.HTMLBody)
+        # dataframe of table from email
+        #data = pd.read_html(i.HTMLBody)
 
-            # print(i.Body)
+        # print(i.Body)
 
-            #data1 = data1.drop_duplicates(subset='0')
+        #data1 = data1.drop_duplicates(subset='0')
 
-            if factName != None:
-                if factName.group(0) == 'APCC':
-                    print("Found APCC workplan")
+        if factName != None:
+            if factName.group(0) == 'Work Plan':
+                print("Found APCC workplan")
 
-                    # drop duplicates and NA
-                    data1 = pd.read_html(i.HTMLBody)[0].dropna(
-                        axis=1, how='all', thresh=3)
+                # drop duplicates and NA
+                data1 = pd.read_html(i.HTMLBody)[0].dropna(
+                    axis=1, how='all', thresh=3)
 
-                    data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-                    if not data1[data1['Date'].astype(str).str.contains("Date")].empty:
-                        data3 = data1.drop(data1.index[range(5)])
-                        # print(data3.reset_index(drop=True))
-                        df = data3.reset_index(drop=True)
+                data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-                        # insert data for APCC
-                        ExcelCreator.APCCDataInsert(
-                            APCClogic(df, factName), file_dir['main_excel'])
+                if not data1[data1['Date'].astype(str).str.contains("Date")].empty:
+                    data3 = data1.drop(data1.index[range(5)])
+                    #print(data3.reset_index(drop=True))
+                    df = data3.reset_index(drop=True)
 
-                elif factName.group(0) == 'ICC':
-                    print("Found ICC workplan")
+                    # insert data for APCC
+                    ExcelCreator.APCCDataInsert(
+                        APCClogic(df, factName), file_dir['main_excel'])
+                    print("Successfully inserted data for APCC.")
 
-                    # change header of datarframe
-                    new_header = pd.read_html(i.HTMLBody)[3].iloc[0]
-                    df = pd.read_html(i.HTMLBody)[3][1:]
-                    df.columns = new_header
+            elif factName.group(0) == 'Tom Shift':
+                print("Found ICC workplan")
 
-                    # insert data for ICC
-                    ExcelCreator.ICCDataInsert(
-                        ICClogic(df, factName), file_dir['main_excel'])
+                # change header of datarframe
+                new_header = pd.read_html(i.HTMLBody)[4].iloc[0] #either 3 or 4
+                df = pd.read_html(i.HTMLBody)[4][1:] #either 3 or 4
+                df.columns = new_header
 
-                elif factName.group(0) == 'BRH':
-                    print("Found BRH workplan")
-                    new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
-                    df = pd.read_html(i.HTMLBody)[0][1:]
-                    df.columns = new_header
+                # insert data for ICC
+                ExcelCreator.ICCDataInsert(
+                    ICClogic(df, factName), file_dir['main_excel'])
 
-                    df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
+            elif factName.group(0) == 'Commit Produção':
+                print("Found BRH workplan")
+                new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
+                df = pd.read_html(i.HTMLBody)[0][1:]
+                df.columns = new_header
 
-                    new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
-                    df1.columns = new_header
+                df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
 
-                    df1 = df1.fillna(0)
+                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
+                df1.columns = new_header
 
-                    ExcelCreator.BRH1DataInsert(
-                        BRHlogic(df1, factName), file_dir['main_excel'])
+                df1 = df1.fillna(0)
 
-            elif Ot_EMFP != None:
-                print("EMFP OT email found")
-                ExcelCreator.OTDataInsert(
-                    'EMFP', i.Body, file_dir['main_excel'])
+                ExcelCreator.BRH1DataInsert(
+                    BRHlogic(df1, factName), file_dir['main_excel'])
 
-        print("Done!")
+        elif Ot_EMFP != None:
+            print("EMFP OT email found")
+            ExcelCreator.OTDataInsert(
+                'EMFP', i.Body, file_dir['main_excel'])
 
-    except PermissionError as e:
-        print("Theres a problem while saving the excel file. Close file if its active.")
-        print(str(e))
+    print("Done!")
 
-    except Exception as e:
-        print("Error while processing data from e-mail")
-        print(str(e))
+    # except PermissionError as e:
+    #     print("Theres a problem while saving the excel file. Close file if its active.")
+    #     print(str(e))
+
+    # except Exception as e:
+    #     print("Error while processing data from e-mail")
+    #     print(str(e))
 
     # EMFP insertion
     try:

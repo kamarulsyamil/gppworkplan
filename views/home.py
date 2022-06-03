@@ -71,6 +71,7 @@ def load_view():
         st.write('Date: ', datedf.iloc[47][9])
 
         st.write(df2.iloc[41:42, :].astype(str))
+        st.write(df2.iloc[57:58, :].astype(str))
 
     elif option == 'BRH1':
         st.write('Date: ', datedf.iloc[55][9])

@@ -1,4 +1,5 @@
 from calendar import month
+import datetime
 from itertools import dropwhile
 from operator import index
 from turtle import right
@@ -14,12 +15,13 @@ import glob
 
 fact_data = pd.DataFrame()
 
-f = "\\\\w1039fnf93.dhcp.apac.dell.com\\PlannerDoc\\SHIFT ARRANGEMENT\\Production Line Arrangement of 2022.xlsx" #r"sources\Production Line Arrangement of 2022.xlsx"
-
+# f = "\\\\w1039fnf93.dhcp.apac.dell.com\\PlannerDoc\\SHIFT ARRANGEMENT\\Production Line Arrangement of 2022.xlsx" #r"sources\Production Line Arrangement of 2022.xlsx"
+f = r"sources\Production Line Arrangement of 2022.xlsx"
 # process excel shifts of CCC4
 
 
 xl = pd.ExcelFile(f)
+today = datetime.date.today()
 
 
 def CCC2Day():
@@ -42,27 +44,39 @@ def CCC2Day():
 
     # if not df3[df3['0'].str.contains("CCC4", na=False)].empty:
 
-    num = "May.25"
+    num = "May.07"
 
-    date = df3[df3['0'].str.contains(
-        "(?=.*%s)(?=.*Today|.*Next)(?!.*Turn).*" % num, na=False)].index.values
+    # date = df3[df3['0'].str.contains(
+    #     "(?=.*%s)(?=.*Today|.*Next)(?!.*Turn).*" % num, na=False)].index.values
 
     dfList = df3[df3['0'] == "Total HC:"].index.values
-    
+
     try:
         for i in range(0, 2):
-            C4Df = df3.iloc[date[(-1)-i]:dfList[dfList > date[(-1)-i]][0], :]
-            header = C4Df.iloc[0]
-            C4Df = C4Df[1:]
-            C4Df.columns = header
 
             if i == 0:
+                date_off = df3[df3['0'].str.contains(
+                    "(?=.*%s)(?=.*Today)(?!.*Turn).*" % num, na=False)].index.values
+                C4Df = df3.iloc[date_off[(-1)] +
+                                1:dfList[dfList > date_off[(-1)]+1][0], :]
+                header = C4Df.iloc[0]
+                C4Df = C4Df[1:]
+                C4Df.columns = header
                 off_duty = C4Df.dropna(how="all", axis=1)
+
             elif i == 1:
+                date_on = df3[df3['0'].str.contains(
+                    "(?=.*%s)(?=.*Next)(?!.*Turn).*" % num, na=False)].index.values
+
+                C4Df = df3.iloc[date_on[(-1)] +
+                                1:dfList[dfList > date_on[(-1)]+1][0], :]
+                header = C4Df.iloc[0]
+                C4Df = C4Df[1:]
+                C4Df.columns = header
                 on_duty = C4Df.dropna(how="all", axis=1)
 
         return on_duty, off_duty, shift, num
-    
+
     except IndexError as e:
         print("Shift times is incomplete for this date. Please try another date.")
 
@@ -86,22 +100,46 @@ def CCC4Day():
     # print(df2[df2['1']:])
 
     # if not df3[df3['0'].str.contains("CCC4", na=False)].empty:
-    num = "May.25"
-    date = df3[df3['0'].str.contains(
-        "(?=.*%s)(?=.*Day Shift).*" % num, na=False)].index.values
+    # date = df3[df3['0'].str.contains(
+    #     "(?=.*%s)(?=.*Day Shift).*" % num, na=False)].index.values
+
+    num = "May.10"
 
     dfList = df3[df3['0'] == "Total HC:"].index.values
 
     for i in range(0, 2):
-        C4Df = df3.iloc[date[i]+1:dfList[dfList > date[i]][0], :]
-        header = C4Df.iloc[0]
-        C4Df = C4Df[1:]
-        C4Df.columns = header
 
         if i == 0:
-            on_duty = C4Df.dropna(how="all", axis=1)
-        elif i == 1:
+            date_off = df3[df3['0'].str.contains(
+                "(?=.*%s)(?=.*Today)(?!.*Turn).*" % num, na=False)].index.values
+            C4Df = df3.iloc[date_off[(-1)] +
+                            1:dfList[dfList > date_off[(-1)]+1][0], :]
+            header = C4Df.iloc[0]
+            C4Df = C4Df[1:]
+            C4Df.columns = header
             off_duty = C4Df.dropna(how="all", axis=1)
+
+        elif i == 1:
+            date_on = df3[df3['0'].str.contains(
+                "(?=.*%s)(?=.*Next)(?!.*Turn).*" % num, na=False)].index.values
+
+            C4Df = df3.iloc[date_on[(-1)] +
+                            1:dfList[dfList > date_on[(-1)]+1][0], :]
+            header = C4Df.iloc[0]
+            C4Df = C4Df[1:]
+            C4Df.columns = header
+            on_duty = C4Df.dropna(how="all", axis=1)
+
+    # for i in range(0, 2):
+    #     C4Df = df3.iloc[date[i]+1:dfList[dfList > date[i]][0], :]
+    #     header = C4Df.iloc[0]
+    #     C4Df = C4Df[1:]
+    #     C4Df.columns = header
+
+    #     if i == 0:
+    #         on_duty = C4Df.dropna(how="all", axis=1)
+    #     elif i == 1:
+    #         off_duty = C4Df.dropna(how="all", axis=1)
 
     return on_duty, off_duty, shift, num
 

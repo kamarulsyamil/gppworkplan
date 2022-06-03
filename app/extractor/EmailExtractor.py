@@ -1,5 +1,7 @@
 from cmath import nan
 import os
+from re import L
+import re
 from matplotlib.pyplot import axis
 import numpy as np
 from numpy import AxisError, NaN, expand_dims
@@ -18,6 +20,7 @@ today = datetime.date.today()
 def getTableEmail():
 
     msg = []
+    APCC_msg = []
 
     # create instance of Outlook
     outlook = client.Dispatch('Outlook.Application')
@@ -31,9 +34,25 @@ def getTableEmail():
     # get only mail items from the inbox (other items can exists and will return an error if you try get the subject line of a non-mail item)
     mail_items = [item for item in inbox.Items if item.Class == 43]
 
+    lastWeekDateTime = datetime.datetime.now() - datetime.timedelta(days=8)
+
+    last_week_mail = inbox.Items.Restrict(
+        "[ReceivedTime] >= '"+lastWeekDateTime.strftime('%m/%d/%Y %H:%M %p')+"'")
+
+    c = 0
+    for message in last_week_mail:
+        # print(message.subject)
+        # print(message.ReceivedTime)
+
+        APCC_msg.append(message)
+
+        c = c+1
+
     # filter to the target email
     filtered = [
-        item for item in mail_items if item.Unread and item.Senton.date() == today or 'EMFP Overtime' in item.Subject]
+        item for item in mail_items if item.Unread and item.Senton.date() == today or (item.Unread and 'EMFP Overtime' in item.Subject)]
+
+    #print("The count of meesgaes unread from past week ==", c)
 
     if len(filtered) == 0:
         print("No filtered email(s)")
@@ -51,14 +70,27 @@ def getTableEmail():
 
         elif len(filtered) != 0:
             print("No Email")
+    print(n)
 
-    return msg
+    # if there is APCC workplan, download it and save it to source.
+    # while n < len(APCC_filter):
+
+    #     if len(APCC_filter) != 0:
+    #         target_email = APCC_filter[n]
+    #         n += 1
+
+    #         APCC_msg.append(target_email)
+
+    #     elif len(APCC_filter) != 0:
+    #         print("No Email")
+
+    return msg, APCC_msg
 
 # APCC
 
 
-def APCClogic(df, factName):
-    date = today.strftime('%d-%b')
+def APCClogic(df):
+    date = today.strftime('%#d-%b')
     #date = '30-May'
 
     first_shift = []
@@ -141,7 +173,7 @@ def ICClogic(df, factName):
 
     #shift_time = df.loc[1]['BACK END'].replace(" ", "")
 
-    print(df)
+    # print(df)
 
     for i, row in df.iterrows():
         data = str(row['FRONT END']).replace(" ", "")
@@ -195,29 +227,32 @@ def EMFPlogic(f):
     df = tabula.read_pdf(
         f, stream=True, pages='all')
 
-    for i in df:
+    try:
+        for i in df:
 
-        # print(i)
+            # print(i)
+            if today.strftime('%B') in i.values:
+                #print("Month :", today.strftime('%B'))
 
-        if today.strftime('%B') in i.values:
-            #print("Month :", today.strftime('%B'))
+                df1 = i.dropna(how='all', thresh=4, axis=1)
+                df2 = df1.dropna(how='all', thresh=5)
+                df3 = df2.reset_index(drop=True)
+                df4 = df3.iloc[-2:, :]
 
-            df1 = i.dropna(how='all', thresh=4, axis=1)
-            df2 = df1.dropna(how='all', thresh=5)
-            df3 = df2.reset_index(drop=True)
-            df4 = df3.iloc[-2:, :]
+                df5 = pd.DataFrame()
+                templist = []
+                for col in df4:
+                    templist.append(df4[col].str.split(expand=True))
 
-            df5 = pd.DataFrame()
-            templist = []
-            for col in df4:
-                templist.append(df4[col].str.split(expand=True))
+                df5 = pd.concat(templist, axis=1)
+                df5.columns = np.arange(len(df5.columns))
 
-            df5 = pd.concat(templist, axis=1)
-            df5.columns = np.arange(len(df5.columns))
+                return df5[today.day]
 
-            return df5[today.day]
+    except Exception as e:
+        print("No data for", today.strftime('%#d %B'))
 
 
-getTableEmail()
+# getTableEmail()
 # BRHlogic()
 # EMFPlogic()

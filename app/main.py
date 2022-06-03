@@ -11,6 +11,7 @@ from openpyxl import load_workbook
 import datetime
 from openpyxl.styles import Alignment
 from time import gmtime, strftime
+import streamlit as st
 
 
 def main():
@@ -37,22 +38,24 @@ def main():
 
     print("Data processing started...")
 
-    try:
-        print("inserting data for CCC4...")
+    # try:
+    print("inserting data for CCC4...")
 
-        ExcelCreator.CCC4DataInsert(CCC4Day(), file_dir['main_excel'])
-        ExcelCreator.CCC2DataInsert(CCC2Day(), file_dir['main_excel'])
+    ExcelCreator.CCC4DataInsert(CCC4Day(), file_dir['main_excel'])
+    ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
 
-        ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
-        ExcelCreator.CCC4DataInsert(CCC4Night(), file_dir['main_excel'])
+    print("inserting data for CCC2...")
 
-    except PermissionError as e:
-        print("Theres a problem while saving the excel file. Close file if its active.")
-        print(str(e))
+    ExcelCreator.CCC2DataInsert(CCC2Day(), file_dir['main_excel'])
+    ExcelCreator.CCC2DataInsert(CCC2Night(), file_dir['main_excel'])
 
-    except Exception as e:
-        print("Theres a problem while inserting CCC2 data")
-        print("Error: ", str(e))
+    # except PermissionError as e:
+    #     print("Theres a problem while saving the excel file. Close file if its active.")
+    #     print(str(e))
+
+    # except Exception as e:
+    #     print("Theres a problem while inserting CCC2/4 data")
+    #     print("Error: ", str(e))
 
     # CCC6 data insertion
     try:
@@ -63,86 +66,112 @@ def main():
     # FROM EMAIL
     # ---------------------------------------------------
 
-    #try:
-    print("Inserting data for ICC and APCC workplans")
+    # APCC data insertion
 
-    for i in getTableEmail():
+    # drop duplicates and NA
 
-        factName = re.search('(Tom Shift|Work Plan|Commit Produção)', i.Body) #perlu diubah Tom shift = ICC, Work Plan = APCC, 
+    # ICC BRH data insertion
 
-        # EMFP OT
-        Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
+    try:
+        print("Inserting data for APCC workplan")
 
-        # dataframe of table from email
-        #data = pd.read_html(i.HTMLBody)
+        ICC_BRH, APCC = getTableEmail()
 
-        # print(i.Body)
+        for i in APCC:
+            factName = re.search('(Work Plan)', i.Body)
 
-        #data1 = data1.drop_duplicates(subset='0')
+            if factName != None:
+                if factName.group(0) == 'Work Plan':
+                    data1 = pd.read_html(i.HTMLBody)[0].dropna(
+                        axis=1, how='all', thresh=3)
 
-        if factName != None:
-            if factName.group(0) == 'Work Plan':
-                print("Found APCC workplan")
+                    data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
 
-                # drop duplicates and NA
-                data1 = pd.read_html(i.HTMLBody)[0].dropna(
-                    axis=1, how='all', thresh=3)
+        if not data1[data1['Date'].astype(str).str.contains("Date")].empty:
+            data3 = data1.drop(data1.index[range(5)])
+            # print(data3.reset_index(drop=True))
+            df = data3.reset_index(drop=True)
 
+            # insert data for APCC
+            ExcelCreator.APCCDataInsert(
+                APCClogic(df), file_dir['main_excel'])
+            print("Successfully inserted data for APCC.")
 
-                data1.columns = ['Date', 'Line', 'Frontend', 'Backend']
+    except Exception as e:
+        print("Error :" + str(e))
 
-                if not data1[data1['Date'].astype(str).str.contains("Date")].empty:
-                    data3 = data1.drop(data1.index[range(5)])
-                    #print(data3.reset_index(drop=True))
-                    df = data3.reset_index(drop=True)
+    try:
+        print("Inserting data for ICC,APCC and BRH workplans")
 
-                    # insert data for APCC
-                    ExcelCreator.APCCDataInsert(
-                        APCClogic(df, factName), file_dir['main_excel'])
-                    print("Successfully inserted data for APCC.")
+        for i in ICC_BRH:
 
-            elif factName.group(0) == 'Tom Shift':
-                print("Found ICC workplan")
+            # perlu diubah Tom shift = ICC, Work Plan = APCC,
+            factName = re.search(
+                '(Tom Shift|Commit Produção)', i.Subject)
 
-                # change header of datarframe
-                new_header = pd.read_html(i.HTMLBody)[4].iloc[0] #either 3 or 4
-                df = pd.read_html(i.HTMLBody)[4][1:] #either 3 or 4
-                df.columns = new_header
+            # EMFP OT
+            Ot_EMFP = re.search('(EMFP Overtime)', i.Subject)
 
-                # insert data for ICC
-                ExcelCreator.ICCDataInsert(
-                    ICClogic(df, factName), file_dir['main_excel'])
+            # dataframe of table from email
+            #data = pd.read_html(i.HTMLBody)
 
-            elif factName.group(0) == 'Commit Produção':
-                print("Found BRH workplan")
-                new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
-                df = pd.read_html(i.HTMLBody)[0][1:]
-                df.columns = new_header
+            # print(i.Body)
 
-                df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
+            #data1 = data1.drop_duplicates(subset='0')
 
-                new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
-                df1.columns = new_header
+            if factName != None:
 
-                df1 = df1.fillna(0)
+                # ICC
+                if factName.group(0) == 'Tom Shift':
+                    print("Found ICC workplan")
 
-                ExcelCreator.BRH1DataInsert(
-                    BRHlogic(df1, factName), file_dir['main_excel'])
+                    # change header of datarframe
+                    new_header = pd.read_html(i.HTMLBody)[-1].iloc[0]
+                    df = pd.read_html(i.HTMLBody)[-1][1:]
+                    df.columns = new_header
 
-        elif Ot_EMFP != None:
-            print("EMFP OT email found")
-            ExcelCreator.OTDataInsert(
-                'EMFP', i.Body, file_dir['main_excel'])
+                    # date of plan
+                    ICC_date = re.findall(
+                        r"[0-3][0-9]-[A-Z][a-z][a-z]", i.Body)
+                    # print(ICC_date[-1])
 
-    print("Done!")
+                    # insert data for ICC
+                    ExcelCreator.ICCDataInsert(
+                        ICClogic(df, factName), file_dir['main_excel'], ICC_date[-1])
+                    print("Successfully inserted data for ICC.")
 
-    # except PermissionError as e:
-    #     print("Theres a problem while saving the excel file. Close file if its active.")
-    #     print(str(e))
+                # BRH
+                elif factName.group(0) == 'Commit Produção':
+                    print("Found BRH workplan")
+                    new_header = pd.read_html(i.HTMLBody)[0].iloc[0]
+                    df = pd.read_html(i.HTMLBody)[0][1:]
+                    df.columns = new_header
 
-    # except Exception as e:
-    #     print("Error while processing data from e-mail")
-    #     print(str(e))
+                    df1 = df.drop(['LINE', 'CAP', 'Config'], axis=1)
+
+                    new_header = ['LOB', 'HRS1', 'UPH1', 'HRS2', 'UPH2']
+                    df1.columns = new_header
+
+                    df1 = df1.fillna(0)
+
+                    ExcelCreator.BRH1DataInsert(
+                        BRHlogic(df1, factName), file_dir['main_excel'])
+                    print("Successfully inserted data for BRH.")
+
+            elif Ot_EMFP != None:
+                print("EMFP OT email found")
+                ExcelCreator.OTDataInsert(
+                    'EMFP', i.Body, file_dir['main_excel'])
+
+        print("Done!")
+
+    except PermissionError as e:
+        print("Theres a problem while saving the excel file. Close file if its active.")
+        print(str(e))
+
+    except Exception as e:
+        print("Error while processing data from e-mail/No workplan found")
+        print(str(e))
 
     # EMFP insertion
     try:
@@ -153,7 +182,7 @@ def main():
         print("failed to insert EMFP data")
         print(str(e))
 
-    # Updated time
+    # Update time
     wb = load_workbook(file_dir['main_excel'])
     ws = wb.active
 
@@ -162,6 +191,7 @@ def main():
     ws['I5'] = strftime("%z", gmtime())
 
     wb.save(file_dir['main_excel'])
+    print("Successfully inserted data for EMFP.")
 
 
 if __name__ == "__main__":

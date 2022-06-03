@@ -1,3 +1,4 @@
+from operator import contains
 from time import gmtime, strftime
 from numpy import double
 import xlsxwriter as xlwrite
@@ -737,11 +738,21 @@ def APCCDataInsert(df, excel_dir):
 
     ws['J32'] = date
 
+    # Normal occurence
     for i in first_shift:
-        first_result.append(i.split(' - '))
+        if "-" in i:
+            first_result.append(i.split(' - '))
+
+        else:
+            other_arr = [i, i]
+            first_result.append(other_arr)
 
     for i in second_shift:
-        second_result.append(i.split(' - '))
+        if "-" in i:
+            second_result.append(i.split(' - '))
+        else:
+            other_arr = [i, i]
+            second_result.append(other_arr)
 
     first_shift_list = list(chain.from_iterable(zip(*first_result)))
     second_shift_list = list(chain.from_iterable(zip(*second_result)))
@@ -761,7 +772,7 @@ def APCCDataInsert(df, excel_dir):
     wb.save(excel_dir)
 
 
-def ICCDataInsert(df, excel_dir):
+def ICCDataInsert(df, excel_dir, ICC_date):
     # frontend and backend
     front_df, back_df = df
 
@@ -865,7 +876,8 @@ def ICCDataInsert(df, excel_dir):
                 cell.value = list(back_first_list)[i]
                 i += 1
 
-        ws['J40'] = date.strftime('%d-%b')
+        # ICC DATE
+        ws['J40'] = ICC_date
 
     wb.save(excel_dir)
 
@@ -982,7 +994,7 @@ def EMFPDataInsert(df, excel_dir):
     ws['B50'] = 'EMFP'
 
     # date
-    ws["J48"] = date.strftime('%d-%b')
+    ws["J48"] = date.strftime('%#d-%b')
 
     if '6:00' in df.to_string():
         ws['C50'] = '6:00'

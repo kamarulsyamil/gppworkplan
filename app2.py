@@ -6,7 +6,8 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 
-st.set_page_config(page_title = 'Dell Factory Consolidate View',page_icon='Dell_Logo_Blue_rgb.png' )
+st.set_page_config(page_title='Dell Factory Consolidate View',
+                   page_icon='Dell_Logo_Blue_rgb.png')
 
 st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
 
@@ -30,16 +31,17 @@ st.markdown("""
 st.header('Consolidate View')
 
 group = option_menu(
-        menu_title= "Factory",
-        options = ['ALL','BRH1','EMFP','CCC4','APCC','CCC2','CCC6','ICC'],
-        menu_icon = "building",
-        icons = ['bank2','bank2','bank2','bank2','bank2','bank2','bank2','bank2',],
-        styles={
-            "menu_icon": {"color":"#3498DB"},
-           "nav-link-selected": {"background-color": "#3498DB"} 
-        },
-        orientation="horizontal"
-    )
+    menu_title="Factory",
+    options=['ALL', 'BRH1', 'EMFP', 'CCC4', 'APCC', 'CCC2', 'CCC6', 'ICC'],
+    menu_icon="building",
+    icons=['bank2', 'bank2', 'bank2', 'bank2',
+           'bank2', 'bank2', 'bank2', 'bank2', ],
+    styles={
+        "menu_icon": {"color": "#3498DB"},
+        "nav-link-selected": {"background-color": "#3498DB"}
+    },
+    orientation="horizontal"
+)
 
 hide_st_style = """ 
                 <style>
@@ -49,25 +51,25 @@ hide_st_style = """
                 </style>
                 """
 
-st.markdown (hide_st_style, unsafe_allow_html=True)
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
-##-- LOAD DATAFRAME
-excel_file = r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Consolidated Factory Workplan.xlsx'
+# -- LOAD DATAFRAME
+excel_file = r'Consolidated Factory Workplan.xlsx'
 sheet_name = 'Workplans'
 
 df = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='B:K',
-                    skiprows= (0,1,2,3,4,5),
-                    header = None)
+                   sheet_name=sheet_name,
+                   usecols='B:K',
+                   skiprows=(0, 1, 2, 3, 4, 5),
+                   header=None)
 
 
 df1 = df.fillna('')
 time = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='F:F',
-                    nrows=1,
-                    header=3)
+                     sheet_name=sheet_name,
+                     usecols='F:F',
+                     nrows=1,
+                     header=3)
 
 time1 = time.iloc[0][0]
 
@@ -80,14 +82,14 @@ col1, col2, col3 = st.columns(3)
 
 
 # group = st.selectbox('Choose the factory',('All','BRH1','EMFP','CCC4','APCC','CCC2','CCC6','ICC'))
-st.write('You have selected',group)
+st.write('You have selected', group)
 
 ccc4 = df1.iloc[0:9, :].astype(str)
 ccc2 = df1.iloc[9:18, :].astype(str)
 ccc6 = df1.iloc[17:21, :].astype(str)
 apcc = df1.iloc[25:33, :].astype(str)
 emfp = df1.iloc[41:44, :].astype(str)
-brh1 = df1.iloc[49:58, :].astype(str) 
+brh1 = df1.iloc[49:58, :].astype(str)
 icc = df1.iloc[33:41, :].astype(str)
 
 if group == 'ALL':
@@ -95,10 +97,10 @@ if group == 'ALL':
 
 elif group == 'BRH1':
     D1 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=54)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=54)
 
     DD1 = D1.iloc[0][0]
     st.write('Date: ' + DD1)
@@ -106,21 +108,21 @@ elif group == 'BRH1':
 
 elif group == 'CCC2':
     D2 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=14)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=14)
 
     DD2 = D2.iloc[0][0]
-    st.write('Date: ' + DD2)  
+    st.write('Date: ' + DD2)
     st.write(ccc2)
 
 elif group == 'CCC4':
     D3 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=5)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=5)
 
     DD3 = D3.iloc[0][0]
     st.write('Date: ' + DD3)
@@ -128,10 +130,10 @@ elif group == 'CCC4':
 
 elif group == 'CCC6':
     D4 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=22)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=22)
 
     DD4 = D4.iloc[0][0]
     st.write('Date: ' + DD4)
@@ -139,10 +141,10 @@ elif group == 'CCC6':
 
 elif group == 'APCC':
     D5 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=30)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=30)
 
     DD5 = D5.iloc[0][0]
     st.write('Date: ' + DD5)
@@ -150,10 +152,10 @@ elif group == 'APCC':
 
 elif group == 'ICC':
     D6 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=38)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=38)
 
     DD6 = D6.iloc[0][0]
     st.write('Date: ' + DD6)
@@ -161,10 +163,10 @@ elif group == 'ICC':
 
 elif group == 'EMFP':
     D7 = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='J:J',
-                    nrows=1,
-                    header=46)
+                       sheet_name=sheet_name,
+                       usecols='J:J',
+                       nrows=1,
+                       header=46)
 
     DD7 = D7.iloc[0][0]
     st.write('Date: ' + DD7)
@@ -173,10 +175,10 @@ elif group == 'EMFP':
 
 st.write('To download the full page of consolidate view, click download button below :')
 btn = st.download_button(
-    label= 'Download File',
-    data= excel_file,
-    file_name= excel_file,
-    )
+    label='Download File',
+    data=excel_file,
+    file_name=excel_file,
+)
 
 st.markdown("""
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

@@ -4,7 +4,8 @@ import altair as alt
 
 from urllib.error import URLError
 
-st.set_page_config(page_title = 'Dell Factory Consolidate View',page_icon='Dell_Logo_Blue_rgb.png' )
+st.set_page_config(page_title='Dell Factory Consolidate View',
+                   page_icon='Dell_Logo_Blue_rgb.png')
 
 st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
 
@@ -32,23 +33,23 @@ hide_st_style = """
                 </style>
                 """
 
-st.markdown (hide_st_style, unsafe_allow_html=True)
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
-excel_file = r'C:\Users\Kamarul_Syamil\Desktop\Dell\Project\Consolidated Factory Workplan.xlsx'
+excel_file = r'Consolidated Factory Workplan.xlsx'
 sheet_name = 'Workplans'
 df = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='B:K',
-                    skiprows= (0,1,2,3,4,5),
-                    header = None)
+                   sheet_name=sheet_name,
+                   usecols='B:K',
+                   skiprows=(0, 1, 2, 3, 4, 5),
+                   header=None)
 
 df1 = df.fillna('')
 time = pd.read_excel(excel_file,
-                    sheet_name=sheet_name,
-                    usecols='F:F',
-                    nrows=1,
-                    header=3)
+                     sheet_name=sheet_name,
+                     usecols='F:F',
+                     nrows=1,
+                     header=3)
 
 time1 = time.iloc[0][0]
 st.header('Consolidate View')
@@ -59,34 +60,34 @@ ccc2 = df1.iloc[9:18, :].astype(str)
 ccc6 = df1.iloc[17:21, :].astype(str)
 apcc = df1.iloc[25:33, :].astype(str)
 emfp = df1.iloc[41:44, :].astype(str)
-brh1 = df1.iloc[49:58, :].astype(str) 
+brh1 = df1.iloc[49:58, :].astype(str)
 icc = df1.iloc[33:41, :].astype(str)
 
 try:
     factory = st.multiselect(
-    'Choose the factory',['All','BRH1','EMFP','CCC4','APCC','CCC2','CCC6','ICC']
+        'Choose the factory', ['All', 'BRH1', 'EMFP',
+                               'CCC4', 'APCC', 'CCC2', 'CCC6', 'ICC']
     )
-    
 
     # if not factory:
     #     st.error("Please select at least one country.")
 
-    if factory:       
-        
+    if factory:
+
         if 'All' in factory:
             st.write(df1.astype(str))
 
         if 'BRH1' in factory:
             D1 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=54)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=54)
             t1 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=54)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=54)
 
             DD1 = D1.iloc[0][0]
             tt1 = t1.iloc[0][0]
@@ -96,33 +97,33 @@ try:
 
         if 'CCC2' in factory:
             D2 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=14)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=14)
             t2 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=14)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=14)
 
             DD2 = D2.iloc[0][0]
             tt2 = t2.iloc[0][0]
             st.write('Date: ' + tt2)
-            st.write('Date: ' + DD2)  
+            st.write('Date: ' + DD2)
             st.write(ccc2)
 
         if 'CCC4' in factory:
             D3 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=5)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=5)
             t3 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=5)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=5)
 
             DD3 = D3.iloc[0][0]
             tt3 = t3.iloc[0][0]
@@ -132,15 +133,15 @@ try:
 
         if 'CCC6' in factory:
             D4 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=22)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=22)
             t4 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=22)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=22)
 
             DD4 = D4.iloc[0][0]
             tt4 = t4.iloc[0][0]
@@ -150,15 +151,15 @@ try:
 
         if 'APCC' in factory:
             D5 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=30)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=30)
             t5 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=30)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=30)
 
             DD5 = D5.iloc[0][0]
             tt5 = t5.iloc[0][0]
@@ -168,15 +169,15 @@ try:
 
         if 'ICC' in factory:
             D6 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=38)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=38)
             t6 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=38)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=38)
 
             DD6 = D6.iloc[0][0]
             tt6 = t6.iloc[0][0]
@@ -186,15 +187,15 @@ try:
 
         if 'EMFP' in factory:
             D7 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='J:J',
-                nrows=1,
-                header=46)
+                               sheet_name=sheet_name,
+                               usecols='J:J',
+                               nrows=1,
+                               header=46)
             t7 = pd.read_excel(excel_file,
-                sheet_name=sheet_name,
-                usecols='D:D',
-                nrows=1,
-                header=46)
+                               sheet_name=sheet_name,
+                               usecols='D:D',
+                               nrows=1,
+                               header=46)
 
             DD7 = D7.iloc[0][0]
             tt7 = t7.iloc[0][0]
@@ -210,28 +211,28 @@ try:
         # data = pd.melt(data, id_vars=["index"]).rename(
         # columns={"index": "year", "value": "Gross Agricultural Product ($B)"}
         # )
-    else :
+    else:
         st.error("Please select at least one factory.")
 
-       
+
 except URLError as e:
     st.error(
-"""
+        """
 **This demo requires internet access.**
 
 
 
 Connection error: %s
 """
-    % e.reason
-)
+        % e.reason
+    )
 
 st.write('To download the full page of consolidate view, click download button below :')
 btn = st.download_button(
-    label= 'Download File',
-    data= excel_file,
-    file_name= excel_file,
-    )
+    label='Download File',
+    data=excel_file,
+    file_name=excel_file,
+)
 
 st.markdown("""
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

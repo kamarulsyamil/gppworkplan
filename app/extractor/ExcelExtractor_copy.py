@@ -1,12 +1,6 @@
-from calendar import month
 import datetime
-from itertools import dropwhile
-from operator import index
-from turtle import right
 #from cv2 import threshold
 import pandas as pd
-import numpy as np
-import glob
 
 # to do list
 # 1. convert the daily excel to dataframe.

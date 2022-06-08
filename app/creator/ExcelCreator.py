@@ -1,12 +1,7 @@
-from operator import contains
-from time import gmtime, strftime
 from numpy import double
-import xlsxwriter as xlwrite
 import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Border, Side, PatternFill, Font, Alignment, numbers
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.cell.cell import WriteOnlyCell
 from itertools import chain
 import re
 import datetime

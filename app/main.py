@@ -5,7 +5,6 @@ import os.path
 import re
 import pandas as pd
 import os
-import win32com.client as win32
 import json
 from openpyxl import load_workbook
 import datetime

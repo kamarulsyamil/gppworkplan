@@ -2,7 +2,7 @@ numpy==1.21.4
 opencv_python==4.5.5.62
 openpyxl==3.0.9
 pandas==1.4.1
-pywin32<302
+# pywin32<302
 requests==2.26.0
 scipy==1.7.2
 SharePlum==0.5.1

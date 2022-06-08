@@ -4,7 +4,7 @@ from streamlit_option_menu import option_menu
 
 
 st.set_page_config(page_title='Dell Factory Consolidate View',
-                   page_icon='Dell_Logo_Blue_rgb.png', layout="wide")
+                   page_icon='assets\media\settings.png', layout="wide")
 
 st.header('Consolidate View')
 
@@ -34,7 +34,7 @@ st.markdown("""
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB; font:serif;">
   <a class="navbar-brand" style="max-width: 500px;
   margin: auto;">
-  <img  src ="media/47d6a03cf55bdc885d96a614db437d6c9e03a03651f46b79dc178db4.png" alt="" width="30" height="30">
+  <img  src ="media/ece2b310c7c817dd3a7e5da29a1adb5608ea6b51036e759b57105c52.png" alt="" width="30" height="30">
      Dell Global Factory Workplan
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

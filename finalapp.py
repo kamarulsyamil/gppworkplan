@@ -34,7 +34,7 @@ st.markdown("""
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #3498DB; font:serif;">
   <a class="navbar-brand" style="max-width: 500px;
   margin: auto;">
-  <img  src ="media/ece2b310c7c817dd3a7e5da29a1adb5608ea6b51036e759b57105c52.png" alt="" width="30" height="30">
+  <img  src ="media/settings.png" alt="" width="30" height="30">
      Dell Global Factory Workplan
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

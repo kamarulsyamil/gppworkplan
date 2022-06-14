@@ -1,9 +1,4 @@
-from itertools import dropwhile
-from operator import index
-from turtle import right
 import pandas as pd
-import numpy as np
-import glob
 
 # to do list
 # 1. convert the daily excel to dataframe.
@@ -28,13 +23,12 @@ def day_CCC4(filepath):
     # night shift
     df = xl.parse(sheet_name=0, usecols="A:R")
 
-    #print(df)
+    # print(df)
 
     #print(df.dropna(how='all', axis=1))
 
     df.columns = ['1', '2', '3', '4', '5', '6', '7', '8',
                   '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
-
 
     max_row = df.shape[0]
     max_col = df.shape[1]
@@ -47,7 +41,7 @@ def day_CCC4(filepath):
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
 
-    #print(df2)
+    # print(df2)
 
     delimiter = df5[df5['11'] == 'Total HC:'].index.values
 
@@ -68,7 +62,6 @@ def night_CCC4(filepath):
     df.columns = ['1', '2', '3', '4', '5', '6', '7', '8',
                   '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
 
-
     max_row = df.shape[0]
     max_col = df.shape[1]
 
@@ -76,7 +69,7 @@ def night_CCC4(filepath):
     df3 = df2.dropna(how='all', axis=1)
     df4 = df3.dropna(how='all')
     df5 = df4.reset_index(drop=True)
-    #print(df5)
+    # print(df5)
 
     delimiter = df5[df5['12'] == 'Total HC:'].index.values
 
@@ -152,7 +145,6 @@ def day_CCC4Df(df):
 
     rightDf = df
 
-
     if not rightDf[rightDf['11'].str.contains("Next Day Shift")].empty:
 
         rightDfclean = rightDf.dropna(how='all', axis=1)
@@ -206,7 +198,6 @@ def night_CCC4Df(df):
     rightDf = df
 
     print(rightDf)
-
 
     if not rightDf[rightDf['12'].str.contains("Next Night-Shift")].empty:
 

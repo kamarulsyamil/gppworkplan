@@ -18,7 +18,7 @@ def get_current_route():
 
 
 def navbar_component():
-    with open("assets/images/settings.png", "rb") as image_file:
+    with open("assets/media/settings.png", "rb") as image_file:
         image_as_base64 = base64.b64encode(image_file.read())
 
     navbar_items = ''

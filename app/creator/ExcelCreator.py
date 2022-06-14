@@ -75,7 +75,9 @@ def createWorkbook(excel_dir):
     ws.merge_cells(start_column=3, start_row=3, end_column=9, end_row=4)
     ws['C3'] = "Consolidated Factory Workplan"
     ws['C3'].font = Font(b=True, size=18)
-    ws['C3'].alignment = Alignment(horizontal='center', vertical='center')
+    ws['C3'].alignment = Alignment(
+        horizontal='centerContinuous', vertical='center')
+    ws.unmerge_cells(start_column=3, start_row=3, end_column=9, end_row=4)
 
     # updated on info
     ws.merge_cells(start_column=3, start_row=5, end_column=5, end_row=5)

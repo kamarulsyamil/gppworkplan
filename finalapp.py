@@ -1,7 +1,9 @@
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
+import subprocess
 
+#subprocess.run(["python", "app\main.py"])
 
 st.set_page_config(page_title='Dell Factory Consolidate View',
                    page_icon='assets\media\settings.png', layout="wide")
@@ -51,6 +53,8 @@ with open('style.css') as f:
 
 a, b, c, d, e, f, g, h = st.columns((1, 1, 1, 1, 1, 1, 1, 1))
 
+isDisabled = True
+
 with a:
     group = option_menu(
         menu_title=None,
@@ -64,7 +68,9 @@ with a:
         },
         orientation="horizontal"
     )
-    group1 = st.checkbox('All')
+    group1 = st.checkbox('All', )
+    isDisabled = True
+
 with b:
     group = option_menu(
         menu_title=None,
@@ -78,7 +84,8 @@ with b:
         orientation="horizontal"
 
     )
-    group2 = st.checkbox('BRH1')
+    group2 = st.checkbox('BRH1', disabled=(
+        group1 is True))
 with c:
     group = option_menu(
         menu_title=None,

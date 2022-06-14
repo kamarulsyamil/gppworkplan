@@ -11,3 +11,4 @@ streamlit_option_menu==0.3.2
 tabula==1.0.5
 tabula_py==2.3.0
 protobuf~=3.19.0
+passlib~=1.7.4

@@ -293,9 +293,12 @@ def main():
 
                             DD2 = D2.iloc[0][0]
                             tt2 = t2.iloc[0][0]
-                            st.write('Factory: ' + tt2)
-                            st.write('Date: ' + DD2)
-                            st.write(ccc2)
+                            if DD2 == '' :
+                                st.warning('No data input for CCC2')
+                            else :
+                                st.write('Factory: ' + tt2)
+                                st.write('Date: ' + DD2)
+                                st.write(ccc2)
 
                         with c2:
                             with open('style3.css') as f:
@@ -314,9 +317,13 @@ def main():
 
                             DD3 = D3.iloc[0][0]
                             tt3 = t3.iloc[0][0]
-                            st.write('Factory: ' + tt3)
-                            st.write('Date: ' + DD3)
-                            st.write(ccc4)
+
+                            if DD3 == '' :
+                                st.warning('No data input for CCC4')
+                            else :
+                                st.write('Factory: ' + tt3)
+                                st.write('Date: ' + DD3)
+                                st.write(ccc4)
 
                         with c3:
                             with open('style3.css') as f:
@@ -335,9 +342,12 @@ def main():
 
                             DD4 = D4.iloc[0][0]
                             tt4 = t4.iloc[0][0]
-                            st.write('Factory: ' + tt4)
-                            st.write('Date: ' + DD4)
-                            st.write(ccc6)
+                            if DD4 == '' :
+                                st.warning('No data input for CCC6')
+                            else :
+                                st.write('Factory: ' + tt4)
+                                st.write('Date: ' + DD4)
+                                st.write(ccc6)
 
                         with c5:
                             with open('style3.css') as f:
@@ -356,9 +366,12 @@ def main():
 
                             DD5 = D5.iloc[0][0]
                             tt5 = t5.iloc[0][0]
-                            st.write('Factory: ' + tt5)
-                            st.write('Date: ' + DD5)
-                            st.write(apcc)
+                            if DD5 == '' :
+                                st.warning('No data input for APCC')
+                            else :
+                                st.write('Factory: ' + tt5)
+                                st.write('Date: ' + DD5)
+                                st.write(apcc)
 
                         with c6:
                             with open('style3.css') as f:
@@ -377,9 +390,12 @@ def main():
 
                             DD7 = D7.iloc[0][0]
                             tt7 = t7.iloc[0][0]
-                            st.write('Factory: ' + tt7)
-                            st.write('Date: ' + DD7)
-                            st.write(emfp)
+                            if DD7 == '' :
+                                st.warning('No data input for EMFP')
+                            else :
+                                st.write('Factory: ' + tt7)
+                                st.write('Date: ' + DD7)
+                                st.write(emfp)
 
                         with c7:
                             with open('style3.css') as f:
@@ -398,9 +414,12 @@ def main():
 
                             DD6 = D6.iloc[0][0]
                             tt6 = t6.iloc[0][0]
-                            st.write('Factory: ' + tt6)
-                            st.write('Date: ' + DD6)
-                            st.write(icc)
+                            if DD6 == '' :
+                                st.warning('No data input for ICC')
+                            else :
+                                st.write('Factory: ' + tt6)
+                                st.write('Date: ' + DD6)
+                                st.write(icc)
 
                         with c4:
                             with open('style3.css') as f:
@@ -419,9 +438,12 @@ def main():
 
                             DD1 = D1.iloc[0][0]
                             tt1 = t1.iloc[0][0]
-                            st.write('Factory: ' + tt1)
-                            st.write('Date: ' + DD1)
-                            st.write(brh1)
+                            if DD1 == '' :
+                                st.warning('No data input for BRH1')
+                            else :
+                                st.write('Factory: ' + tt1)
+                                st.write('Date: ' + DD1)
+                                st.write(brh1)
 
                 else:
 
@@ -443,9 +465,12 @@ def main():
 
                             DD1 = D1.iloc[0][0]
                             tt1 = t1.iloc[0][0]
-                            st.write('Factory: ' + tt1)
-                            st.write('Date: ' + DD1)
-                            st.write(brh1)
+                            if DD1 == '' :
+                                st.warning('No data input for brh1')
+                            else :
+                                st.write('Factory: ' + tt1)
+                                st.write('Date: ' + DD1)
+                                st.write(brh1)
 
                     if group3:
                         with open('style1.css') as f:
@@ -465,9 +490,12 @@ def main():
 
                             DD2 = D2.iloc[0][0]
                             tt2 = t2.iloc[0][0]
-                            st.write('Factory: ' + tt2)
-                            st.write('Date: ' + DD2)
-                            st.write(ccc2)
+                            if DD2 == '' :
+                                st.warning('No data input for CCC2')
+                            else :
+                                st.write('Factory: ' + tt2)
+                                st.write('Date: ' + DD2)
+                                st.write(ccc2)
 
                     if group4:
                         with open('style1.css') as f:
@@ -487,9 +515,12 @@ def main():
 
                             DD3 = D3.iloc[0][0]
                             tt3 = t3.iloc[0][0]
-                            st.write('Factory: ' + tt3)
-                            st.write('Date: ' + DD3)
-                            st.write(ccc4)
+                            if DD3 == '' :
+                                st.warning('No data input for CCC4')
+                            else :
+                                st.write('Factory: ' + tt3)
+                                st.write('Date: ' + DD3)
+                                st.write(ccc4)
 
                     if group5:
                         with open('style1.css') as f:
@@ -509,9 +540,12 @@ def main():
 
                             DD4 = D4.iloc[0][0]
                             tt4 = t4.iloc[0][0]
-                            st.write('Factory: ' + tt4)
-                            st.write('Date: ' + DD4)
-                            st.write(ccc6)
+                            if DD4 == '' :
+                                st.warning('No data input for CCC6')
+                            else :
+                                st.write('Factory: ' + tt4)
+                                st.write('Date: ' + DD4)
+                                st.write(ccc6)
 
                     if group7:
                         with open('style1.css') as f:
@@ -531,9 +565,12 @@ def main():
 
                             DD5 = D5.iloc[0][0]
                             tt5 = t5.iloc[0][0]
-                            st.write('Factory: ' + tt5)
-                            st.write('Date: ' + DD5)
-                            st.write(apcc)
+                            if DD5 == '' :
+                                st.warning('No data input for apcc')
+                            else :
+                                st.write('Factory: ' + tt5)
+                                st.write('Date: ' + DD5)
+                                st.write(apcc)
 
                     if group6:
                         with open('style1.css') as f:
@@ -553,9 +590,12 @@ def main():
 
                             DD6 = D6.iloc[0][0]
                             tt6 = t6.iloc[0][0]
-                            st.write('Factory: ' + tt6)
-                            st.write('Date: ' + DD6)
-                            st.write(icc)
+                            if DD6 == '' :
+                                st.warning('No data input for ICC')
+                            else :
+                                st.write('Factory: ' + tt6)
+                                st.write('Date: ' + DD6)
+                                st.write(icc)
 
                     if group8:
                         with open('style1.css') as f:
@@ -575,9 +615,12 @@ def main():
 
                             DD7 = D7.iloc[0][0]
                             tt7 = t7.iloc[0][0]
-                            st.write('Factory: ' + tt7)
-                            st.write('Date: ' + DD7)
-                            st.write(emfp)
+                            if DD7 == '' :
+                                st.warning('No data input for EMFP')
+                            else :
+                                st.write('Factory: ' + tt7)
+                                st.write('Date: ' + DD7)
+                                st.write(emfp)
 
                 st.write(
                     'To download the full page of consolidate view, click download button below :')
